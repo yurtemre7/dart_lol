@@ -59,7 +59,8 @@ league.getSummonerInfo(summonerName: emre).then((id) {
 If you like my repo please contact me via Discord or Telegram:
 
 Discord: AaronFanEmre#7866
-Telegram: [emredev][https://t.me/emredev]
+
+Telegram: [emredev](https://t.me/emredev)
 
 Thank you very much! Special thanks to you, Flutter!
 Danke an alle, dass ihr hier seid!
