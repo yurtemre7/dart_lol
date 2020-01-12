@@ -56,7 +56,7 @@ league.getSummonerInfo(summonerName: emre).then((id) {
   });
 ```
 
-If you like my repo please contact me via Discord or Telegram:
+If you like my repo and want to help me or whatever, please contact me via Discord or Telegram:
 
 Discord: AaronFanEmre#7866
 
