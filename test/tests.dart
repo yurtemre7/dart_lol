@@ -20,13 +20,21 @@ void main() {
   league.getSummonerInfo(summonerName: emre).then((id) {
     final game = league.getGameHistory(accountID: id.accID);
     game.then((gameStat) {
+
+      print(gameStat[1].championName);
+      // Always outputs your stats for any game in the List of GameStat
+
       gameStat[2].stats().then((ok) {
+
         print(ok.participants[1].summonerName);
+        // Outputs the second summoners name
         league
             .getRankInfos(summonerID: ok.participants[6].summonerID)
             .then((rankInfo) {
+
           print(rankInfo.leaguePoints);
           print(rankInfo.tier);
+          // Outputs the sixth summoners current league points and his current tier
         });
       });
     });
