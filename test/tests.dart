@@ -9,7 +9,7 @@ var emre = 'Ÿurt';
 void main() {
   final league = League(apiToken: apiToken);
 
-  league.getSummonerInfo(summonerName: 'Ÿurt').then((summonerInfo){
+  league.getSummonerInfo(summonerName: 'Ÿurt').then((summonerInfo) {
     print(summonerInfo.summonerName);
     // Outputs Ÿurt
     print(summonerInfo.level);
@@ -17,16 +17,15 @@ void main() {
     // etc.
   });
 
-  
   league.getSummonerInfo(summonerName: emre).then((id) {
     final game = league.getGameHistory(accountID: id.accID);
     game.then((gameStat) {
-      print(gameStat[10].championName);
-      gameStat[10].stats().then((ok) {
+      gameStat[2].stats().then((ok) {
+        print(ok.participants[1].summonerName);
         league
-            .getRankInfos(summonerID: ok.participants[5].summonerID)
+            .getRankInfos(summonerID: ok.participants[6].summonerID)
             .then((rankInfo) {
-          print(rankInfo.rank);
+          print(rankInfo.leaguePoints);
           print(rankInfo.tier);
         });
       });

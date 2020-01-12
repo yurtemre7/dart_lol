@@ -1,4 +1,4 @@
-# dart_lol the one good league of legends plugin for flutter
+# dart_lol, the one good league of legends plugin for flutter
 
 A German package production :D 
 im 17 btw!!!
@@ -16,6 +16,7 @@ final league = League(apiToken: apiToken);
 ```
 
 and furthermore
+
 ```dart
 league.getSummonerInfo(summonerName: 'Ÿurt').then((summonerInfo){
     print(summonerInfo.summonerName);
@@ -25,6 +26,30 @@ league.getSummonerInfo(summonerName: 'Ÿurt').then((summonerInfo){
     // etc.
   });
 ```
+
+A bigger example to how to use my League package (maybe you can see how it actually appeals with the flutter-ish style :D)
+
+```dart
+league.getSummonerInfo(summonerName: emre).then((id) {
+    final game = league.getGameHistory(accountID: id.accID);
+    game.then((gameStat) {
+      gameStat[2].stats().then((ok) {
+        print(ok.participants[1].summonerName);
+        league
+            .getRankInfos(summonerID: ok.participants[6].summonerID)
+            .then((rankInfo) {
+          print(rankInfo.leaguePoints);
+          print(rankInfo.tier);
+        });
+      });
+    });
+  });
+```
+
+
+
+
+
 
 This project is a starting point for a Dart
 [package](https://flutter.dev/developing-packages/),
