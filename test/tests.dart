@@ -1,7 +1,5 @@
 import 'package:dart_lol/dart_lol.dart';
 
-var apiToken = 'RGAPI-8fff7040-aebd-4540-b123-5f29b4646f65';
-
 var summID = 'Gg7L1t2E8chqirSQGhg_M1PAtl52v-KAONcZUFeoBJAIhx1j';
 var summName = 'Rengar Says MIAW';
 var emre = 'Ÿurt';
