@@ -8,6 +8,16 @@ var emre = 'Ÿurt';
 
 void main() {
   final league = League(apiToken: apiToken);
+
+  league.getSummonerInfo(summonerName: 'Ÿurt').then((summonerInfo){
+    print(summonerInfo.summonerName);
+    // Outputs Ÿurt
+    print(summonerInfo.level);
+    // Outputs current summoner level
+    // etc.
+  });
+
+  
   league.getSummonerInfo(summonerName: emre).then((id) {
     final game = league.getGameHistory(accountID: id.accID);
     game.then((gameStat) {
