@@ -46,7 +46,7 @@ class Game {
       url,
     );
     final matchList = json.decode(response.body);
-    //print(matchList);
+    print(matchList);
 
     return GameStat.fromJson(
       json.decode(json.encode(matchList)),

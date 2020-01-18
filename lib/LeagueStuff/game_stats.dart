@@ -5,6 +5,7 @@ import 'champ_names.dart';
 class GameStat {
   final int gameCreation;
   final int gameDuration;
+  final int teamId;
   final int seasonID;
   final String gameMode;
 
@@ -21,6 +22,7 @@ class GameStat {
       {this.gameCreation,
       this.gameDuration,
       this.seasonID,
+      this.teamId,
       this.gameMode,
       this.participants});
 
@@ -28,9 +30,16 @@ class GameStat {
     return GameStat(
         gameCreation: json['gameCreation'],
         gameDuration: json['gameDuration'],
+        teamId: _teamIdFinder(json['teams']),
         seasonID: json['seasonId'],
         participants: _getParticipants(
             json['participantIdentities'], json['participants']));
+  }
+}
+
+_teamIdFinder(List teams) {
+  for (var i = 0; i < 2; i++) {
+    print(teams[i]['teamId']);
   }
 }
 
