@@ -1,7 +1,8 @@
 name: dart_lol
 description: A Flutter package for League of Legends made in Germany with happiness!
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/EmiDevGerman/dart_lol
+#flutter pub publish
 
 environment:
   sdk: ">=2.1.0 <3.0.0"

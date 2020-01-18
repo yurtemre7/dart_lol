@@ -1,3 +1,3 @@
-## [0.0.1] - TODO: Add release date.
+## [0.0.1] - Initial Release :D
 
-* TODO: Describe initial release.
+## [0.0.2] - Now: WIN option available! -> getGameHistory

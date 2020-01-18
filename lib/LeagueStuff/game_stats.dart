@@ -5,7 +5,7 @@ import 'champ_names.dart';
 class GameStat {
   final int gameCreation;
   final int gameDuration;
-  final int teamId;
+  final bool win;
   final int seasonID;
   final String gameMode;
 
@@ -22,25 +22,32 @@ class GameStat {
       {this.gameCreation,
       this.gameDuration,
       this.seasonID,
-      this.teamId,
+      this.win,
       this.gameMode,
       this.participants});
 
-  factory GameStat.fromJson(Map<String, dynamic> json) {
+  factory GameStat.fromJson(Map<String, dynamic> json, name) {
     return GameStat(
-        gameCreation: json['gameCreation'],
-        gameDuration: json['gameDuration'],
-        teamId: _teamIdFinder(json['teams']),
-        seasonID: json['seasonId'],
-        participants: _getParticipants(
-            json['participantIdentities'], json['participants']));
+      gameCreation: json['gameCreation'],
+      gameDuration: json['gameDuration'],
+      win: _teamIdFinder(json['teams'], json['participantIdentities'],
+          json['participants'], name),
+      seasonID: json['seasonId'],
+      participants:
+          _getParticipants(json['participantIdentities'], json['participants']),
+    );
   }
 }
 
-_teamIdFinder(List teams) {
-  for (var i = 0; i < 2; i++) {
-    print(teams[i]['teamId']);
-  }
+_teamIdFinder(List teams, list1, list2, name) {
+  bool won = false;
+  List<Participant> players = _getParticipants(list1, list2);
+  players.forEach((player){
+    if (player.championName == name){
+      won = player.win;
+    }
+  });
+  return won;
 }
 
 List<Participant> _getParticipants(List<dynamic> names, List<dynamic> infos) {

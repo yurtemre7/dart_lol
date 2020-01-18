@@ -16,8 +16,8 @@ void main() {
     // Outputs current summoner level
     // etc.
     league.getGameHistory(accountID: summonerInfo.accID).then((games){
-      games[0].stats().then((stats){
-        print(stats.teamId);
+      games[5].stats().then((stats){
+        print(stats.win);
       });
     });
   });

@@ -38,7 +38,7 @@ class Game {
     );
   }
 
-  /// Needs a String gameID which you can easily get from the Game().gameID.
+  ///
   Future<GameStat> stats() async {
     var url =
         'https://euw1.api.riotgames.com/lol/match/v4/matches/${this.gameID}?api_key=$apiToken';
@@ -49,7 +49,6 @@ class Game {
     print(matchList);
 
     return GameStat.fromJson(
-      json.decode(json.encode(matchList)),
-    );
+        json.decode(json.encode(matchList)), this.championName);
   }
 }
