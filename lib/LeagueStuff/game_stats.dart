@@ -6,6 +6,7 @@ class GameStat {
   final int gameCreation;
   final int gameDuration;
   final bool win;
+  final int kills, deaths, assists, cs;
   final int seasonID;
   final String gameMode;
 
@@ -23,6 +24,10 @@ class GameStat {
       this.gameDuration,
       this.seasonID,
       this.win,
+      this.kills,
+      this.deaths,
+      this.assists,
+      this.cs,
       this.gameMode,
       this.participants});
 
@@ -30,7 +35,15 @@ class GameStat {
     return GameStat(
       gameCreation: json['gameCreation'],
       gameDuration: json['gameDuration'],
+      kills: _kills(json['teams'], json['participantIdentities'],
+          json['participants'], name),
+      deaths: _deaths(json['teams'], json['participantIdentities'],
+          json['participants'], name),
+      assists: _assists(json['teams'], json['participantIdentities'],
+          json['participants'], name),
       win: _teamIdFinder(json['teams'], json['participantIdentities'],
+          json['participants'], name),
+      cs: _cs(json['teams'], json['participantIdentities'],
           json['participants'], name),
       seasonID: json['seasonId'],
       participants:
@@ -42,12 +55,56 @@ class GameStat {
 _teamIdFinder(List teams, list1, list2, name) {
   bool won = false;
   List<Participant> players = _getParticipants(list1, list2);
-  players.forEach((player){
-    if (player.championName == name){
+  players.forEach((player) {
+    if (player.championName == name) {
       won = player.win;
     }
   });
   return won;
+}
+
+_kills(List teams, list1, list2, name) {
+  int kills;
+  List<Participant> players = _getParticipants(list1, list2);
+  players.forEach((player) {
+    if (player.championName == name) {
+      kills = player.kills;
+    }
+  });
+  return kills;
+}
+
+_deaths(List teams, list1, list2, name) {
+  int deaths;
+  List<Participant> players = _getParticipants(list1, list2);
+  players.forEach((player) {
+    if (player.championName == name) {
+      deaths = player.deaths;
+    }
+  });
+  return deaths;
+}
+
+_assists(List teams, list1, list2, name) {
+  int assists;
+  List<Participant> players = _getParticipants(list1, list2);
+  players.forEach((player) {
+    if (player.championName == name) {
+      assists = player.assists;
+    }
+  });
+  return assists;
+}
+
+_cs(List teams, list1, list2, name) {
+  int cs;
+  List<Participant> players = _getParticipants(list1, list2);
+  players.forEach((player) {
+    if (player.championName == name) {
+      cs = player.csScore;
+    }
+  });
+  return cs;
 }
 
 List<Participant> _getParticipants(List<dynamic> names, List<dynamic> infos) {
