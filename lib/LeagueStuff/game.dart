@@ -8,6 +8,7 @@ class Game {
   final String lane;
   final int gameID;
   final int championID;
+  final String summonerName;
   final int time;
   final String championName;
   final Future<GameStat> gameStat;
@@ -21,11 +22,12 @@ class Game {
       this.gameID,
       this.championID,
       this.time,
+      this.summonerName,
       this.championName,
       this.gameStat,
       this.apiToken});
 
-  factory Game.fromJson(Map<String, dynamic> json, String apiToken) {
+  factory Game.fromJson(Map<String, dynamic> json, String apiToken, String summonerName) {
     return Game(
       lane: json['lane'],
       gameID: json['gameId'],
@@ -34,6 +36,7 @@ class Game {
       championName: getChampNameByID(
         json['champion'],
       ),
+      summonerName: summonerName,
       apiToken: apiToken,
     );
   }
@@ -46,9 +49,9 @@ class Game {
       url,
     );
     final matchList = json.decode(response.body);
-    print(matchList);
+    //print(matchList);
 
     return GameStat.fromJson(
-        json.decode(json.encode(matchList)), this.championName);
+        json.decode(json.encode(matchList)), this.championName, this.summonerName);
   }
 }

@@ -7,6 +7,7 @@ class GameStat {
   final int gameDuration;
   final bool win;
   final int kills, deaths, assists, cs;
+  final int playerIDinGame;
   final int seasonID;
   final String gameMode;
 
@@ -26,12 +27,13 @@ class GameStat {
       this.win,
       this.kills,
       this.deaths,
+      this.playerIDinGame,
       this.assists,
       this.cs,
       this.gameMode,
       this.participants});
 
-  factory GameStat.fromJson(Map<String, dynamic> json, name) {
+  factory GameStat.fromJson(Map<String, dynamic> json, name, summoner) {
     return GameStat(
       gameCreation: json['gameCreation'],
       gameDuration: json['gameDuration'],
@@ -46,10 +48,23 @@ class GameStat {
       cs: _cs(json['teams'], json['participantIdentities'],
           json['participants'], name),
       seasonID: json['seasonId'],
+      playerIDinGame:
+          _getPlayerIDinGame(json['participantIdentities'], summoner),
       participants:
           _getParticipants(json['participantIdentities'], json['participants']),
     );
   }
+}
+
+_getPlayerIDinGame(list, summoner) {
+  var id;
+  for (var i = 0; i < 10; i++) {
+    if (list[i]['player']['summonerName'].toString() == summoner) {
+      id = list[i]['participantId'];
+      print(list[i]['player']['summonerName']);
+    }
+  }
+  return id;
 }
 
 _teamIdFinder(List teams, list1, list2, name) {
@@ -113,17 +128,24 @@ List<Participant> _getParticipants(List<dynamic> names, List<dynamic> infos) {
   names.forEach((info) {
     var index = names.indexOf(info);
     part = Participant(
-      summonerName: info['player']['summonerName'],
-      summonerID: info['player']['summonerId'],
-      teamID: infos[index]['teamId'],
-      championName: getChampNameByID(infos[index]['championId']),
-      win: infos[index]['stats']['win'],
-      kills: infos[index]['stats']['kills'],
-      deaths: infos[index]['stats']['deaths'],
-      assists: infos[index]['stats']['deaths'],
-      csScore: infos[index]['stats']['totalMinionsKilled'] +
-          infos[index]['stats']['neutralMinionsKilled'],
-    );
+        summonerName: info['player']['summonerName'],
+        summonerID: info['player']['summonerId'],
+        teamID: infos[index]['teamId'],
+        championName: getChampNameByID(infos[index]['championId']),
+        win: infos[index]['stats']['win'],
+        kills: infos[index]['stats']['kills'],
+        deaths: infos[index]['stats']['deaths'],
+        assists: infos[index]['stats']['deaths'],
+        csScore: infos[index]['stats']['totalMinionsKilled'] +
+            infos[index]['stats']['neutralMinionsKilled'],
+        items: [
+          infos[index]['stats']['item1'],
+          infos[index]['stats']['item2'],
+          infos[index]['stats']['item3'],
+          infos[index]['stats']['item4'],
+          infos[index]['stats']['item5'],
+          infos[index]['stats']['item6'],
+        ]);
     participant.add(part);
   });
 

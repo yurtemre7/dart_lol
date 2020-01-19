@@ -89,7 +89,7 @@ class League {
   /// }
   /// ```
   /// method to get their champion name, level and if chest aquired.
-  Future<List<Game>> getGameHistory({String accountID}) async {
+  Future<List<Game>> getGameHistory({String accountID, String summonerName}) async {
     var url =
         'https://euw1.api.riotgames.com/lol/match/v4/matchlists/by-account/$accountID?api_key=$apiToken';
     var response = await http.get(
@@ -100,7 +100,7 @@ class League {
     matchList.forEach(
       (game) {
         gameList.add(
-          Game.fromJson(json.decode(json.encode(game)), apiToken),
+          Game.fromJson(json.decode(json.encode(game)), apiToken, summonerName),
         );
       },
     );

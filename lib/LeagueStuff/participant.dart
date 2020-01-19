@@ -8,6 +8,7 @@ class Participant {
   final int deaths;
   final int assists;
   final int csScore;
+  final List<int> items;
 
   /// A Summoner() instance to use to create a
   /// custom summoner or use it with the League()
@@ -22,5 +23,6 @@ class Participant {
     this.deaths,
     this.assists,
     this.csScore,
+    this.items,
   });
 }
