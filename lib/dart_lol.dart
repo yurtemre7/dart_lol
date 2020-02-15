@@ -123,4 +123,21 @@ class League {
       return Rank(hotStreak: false, leagueId: '0', leaguePoints: 0, losses: 0, wins: 0, rank: 'unranked', tier: 'no tier');
     }
   }
+
+  Future<Rank> getCurrentGame({String summonerID}) async {
+    var url =
+        'https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/$summonerID?api_key=$apiToken';
+    var response = await http.get(
+      url,
+    );
+    if (response.body.toString() != '[]') {
+      return Rank.fromJson(
+        json.decode(
+          response.body,
+        )[0],
+      );
+    }else{
+      return Rank(hotStreak: false, leagueId: '0', leaguePoints: 0, losses: 0, wins: 0, rank: 'unranked', tier: 'no tier');
+    }
+  }
 }
