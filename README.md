@@ -1,7 +1,9 @@
 # dart_lol, the one good league of legends plugin for flutter
 
 A German package production :D 
-im 17 btw!!!
+im 18 (16.1.2002) btw!!!
+
+#Abitur2020 :D
 
 ## Introduction / Einführung
 This is a simple good package for using the [League of Legends API](https://developer.riotgames.com/api-methods/) (will reference it as LoLApi)
@@ -58,23 +60,9 @@ league.getSummonerInfo(summonerName: emre).then((id) {
 
 If you like my repo and want to help me or whatever, please contact me via Discord or Telegram:
 
-Discord: AaronFanEmre#7866
+Discord: geplutot#7866
 
 Telegram: [emredev](https://t.me/emredev)
 
 Thank you very much! Special thanks to you, Flutter!
 Danke an alle, dass ihr hier seid!
-
-
-
-
-
-
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
