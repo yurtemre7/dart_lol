@@ -11,6 +11,8 @@ class GameStat {
   final int seasonID;
   final String gameMode;
 
+  final data;
+
   /// This list contains a Participant() Instance List with the number of actual players in a game.
   /// e.g. in a ranked game it would be 10 long (0-9).
   final List<Participant> participants;
@@ -31,35 +33,30 @@ class GameStat {
       this.assists,
       this.cs,
       this.gameMode,
-      this.participants});
+      this.participants,
+      this.data});
 
-  factory GameStat.fromJson(Map<String, dynamic> json, name, summoner) {
+  factory GameStat.fromJson(Map<String, dynamic> json, String name, String summonerID) {
     return GameStat(
-      gameCreation: json['gameCreation'],
-      gameDuration: json['gameDuration'],
-      kills: _kills(json['teams'], json['participantIdentities'],
-          json['participants'], name),
-      deaths: _deaths(json['teams'], json['participantIdentities'],
-          json['participants'], name),
-      assists: _assists(json['teams'], json['participantIdentities'],
-          json['participants'], name),
-      win: _teamIdFinder(json['teams'], json['participantIdentities'],
-          json['participants'], name),
-      cs: _cs(json['teams'], json['participantIdentities'],
-          json['participants'], name),
+      gameCreation: json['gameStartTime'],
+      gameDuration: json['gameLength'],
+      /*kills: _kills(json['teams'], json['participantIdentities'], json['participants'], name),
+      deaths: _deaths(json['teams'], json['participantIdentities'], json['participants'], name),
+      assists: _assists(json['teams'], json['participantIdentities'], json['participants'], name),
+      win: _teamIdFinder(json['teams'], json['participantIdentities'], json['participants'], name),
+      cs: _cs(json['teams'], json['participantIdentities'], json['participants'], name),*/
       seasonID: json['seasonId'],
-      playerIDinGame:
-          _getPlayerIDinGame(json['participantIdentities'], summoner),
-      participants:
-          _getParticipants(json['participantIdentities'], json['participants']),
+      /*playerIDinGame: _getPlayerIDinGame(json['participantIdentities'], summonerID),
+      participants: _getParticipants(json['participantIdentities'], json['participants']),*/
+      data: json,
     );
   }
 }
 
-_getPlayerIDinGame(list, summoner) {
+_getPlayerIDinGame(list, String summonerID) {
   var id;
   for (var i = 0; i < 10; i++) {
-    if (list[i]['player']['summonerName'].toString() == summoner) {
+    if (list[i]['player']['summonerName'].toString() == summonerID) {
       id = list[i]['participantId'];
       print(list[i]['player']['summonerName']);
     }
@@ -136,8 +133,7 @@ List<Participant> _getParticipants(List<dynamic> names, List<dynamic> infos) {
         kills: infos[index]['stats']['kills'],
         deaths: infos[index]['stats']['deaths'],
         assists: infos[index]['stats']['deaths'],
-        csScore: infos[index]['stats']['totalMinionsKilled'] +
-            infos[index]['stats']['neutralMinionsKilled'],
+        csScore: infos[index]['stats']['totalMinionsKilled'] + infos[index]['stats']['neutralMinionsKilled'],
         items: [
           infos[index]['stats']['item1'],
           infos[index]['stats']['item2'],

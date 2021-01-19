@@ -1,6 +1,7 @@
 library dart_lol;
 
 import 'dart:convert';
+import 'package:dart_lol/LeagueStuff/game_stats.dart';
 import 'package:http/http.dart' as http;
 
 import 'LeagueStuff/champion_mastery.dart';
@@ -121,18 +122,18 @@ class League {
     }
   }
 
-  Future<Game> getCurrentGame({String summonerID, String summonerName}) async {
+  Future<GameStat> getCurrentGame({String summonerID, String summonerName}) async {
     var url = 'https://euw1.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/$summonerID?api_key=$apiToken';
     var response = await http.get(
       url,
     );
-    if (response.body.toString() != '[]') {
-      return Game.fromJson(
+    if (response.statusCode != 404) {
+      return GameStat.fromJson(
         json.decode(
           response.body,
-        )[0],
-        apiToken,
+        ),
         summonerName,
+        summonerID,
       );
     }
     return null;

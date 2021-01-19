@@ -13,3 +13,5 @@
 ## [0.0.7] - CurrentGame Data fixed, now gets real data
 
 ## [0.0.8] - Wrong URL fixed
+
+## [0.0.9] - adapt to new riot current game API
