@@ -11,3 +11,5 @@
 ## [0.0.6] - little updates
 
 ## [0.0.7] - CurrentGame Data fixed, now gets real data
+
+## [0.0.8] - Wrong URL fixed
