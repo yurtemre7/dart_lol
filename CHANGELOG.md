@@ -9,3 +9,5 @@
 ## [0.0.5] - Now: Items option available! -> getGameHistory
 
 ## [0.0.6] - little updates
+
+## [0.0.7] - CurrentGame Data fixed, now gets real data

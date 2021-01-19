@@ -33,8 +33,7 @@ class League {
   /// ```
   /// method to get their name, account id, level and revision date.
   Future<Summoner> getSummonerInfo({String summonerName}) async {
-    var url =
-        'https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/$summonerName?api_key=$apiToken';
+    var url = 'https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/$summonerName?api_key=$apiToken';
     var response = await http.get(
       url,
     );
@@ -54,8 +53,7 @@ class League {
   /// }
   /// ```
   /// method to get their champion name, level and if chest aquired.
-  Future<List<ChampionMastery>> getChampionMasteries(
-      {String summonerID}) async {
+  Future<List<ChampionMastery>> getChampionMasteries({String summonerID}) async {
     var url =
         'https://euw1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/$summonerID?api_key=$apiToken';
     var response = await http.get(
@@ -90,8 +88,7 @@ class League {
   /// ```
   /// method to get their champion name, level and if chest aquired.
   Future<List<Game>> getGameHistory({String accountID, String summonerName}) async {
-    var url =
-        'https://euw1.api.riotgames.com/lol/match/v4/matchlists/by-account/$accountID?api_key=$apiToken';
+    var url = 'https://euw1.api.riotgames.com/lol/match/v4/matchlists/by-account/$accountID?api_key=$apiToken';
     var response = await http.get(
       url,
     );
@@ -108,8 +105,7 @@ class League {
   }
 
   Future<Rank> getRankInfos({String summonerID}) async {
-    var url =
-        'https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/$summonerID?api_key=$apiToken';
+    var url = 'https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/$summonerID?api_key=$apiToken';
     var response = await http.get(
       url,
     );
@@ -119,25 +115,26 @@ class League {
           response.body,
         )[0],
       );
-    }else{
-      return Rank(hotStreak: false, leagueId: '0', leaguePoints: 0, losses: 0, wins: 0, rank: 'unranked', tier: 'no tier');
+    } else {
+      return Rank(
+          hotStreak: false, leagueId: '0', leaguePoints: 0, losses: 0, wins: 0, rank: 'unranked', tier: 'no tier');
     }
   }
 
-  Future<Rank> getCurrentGame({String summonerID}) async {
-    var url =
-        'https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/$summonerID?api_key=$apiToken';
+  Future<Game> getCurrentGame({String summonerID, String summonerName}) async {
+    var url = 'https://euw1.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/$summonerID?api_key=$apiToken';
     var response = await http.get(
       url,
     );
     if (response.body.toString() != '[]') {
-      return Rank.fromJson(
+      return Game.fromJson(
         json.decode(
           response.body,
         )[0],
+        apiToken,
+        summonerName,
       );
-    }else{
-      return Rank(hotStreak: false, leagueId: '0', leaguePoints: 0, losses: 0, wins: 0, rank: 'unranked', tier: 'no tier');
     }
+    return null;
   }
 }
