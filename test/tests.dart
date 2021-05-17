@@ -1,13 +1,13 @@
 import 'package:dart_lol/dart_lol.dart';
 import 'package:dart_lol/key.dart';
-import 'package:http/http.dart' as http;
 
 var summID = 'Gg7L1t2E8chqirSQGhg_M1PAtl52v-KAONcZUFeoBJAIhx1j';
 var summName = 'Rengar Says MIAW';
 var emre = 'Cord';
 
 main() async {
-  final league = League(apiToken: key);
+  final league = League(apiToken: key, server: 'euw1');
+  // print(league.server);
   var summonerInfo = await league.getSummonerInfo(summonerName: emre);
   /*var url =
       'https://euw1.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/${summonerInfo.summonerID}?api_key=$key';

@@ -31,7 +31,9 @@ class League {
   /// * https://developer.riotgames.com/
   ///
   /// e.g. "EUW1" for Europe West or "NA1" for North America.
-  League({@required this.apiToken, @required this.server});
+  League({@required this.apiToken, @required String server}) {
+    this.server = server.toLowerCase();
+  }
 
   /// Get an Future instance of the Summoner() class.
   /// So use the
