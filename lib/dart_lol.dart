@@ -2,6 +2,7 @@ library dart_lol;
 
 import 'dart:convert';
 import 'package:dart_lol/LeagueStuff/game_stats.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'LeagueStuff/champion_mastery.dart';
@@ -14,6 +15,11 @@ class League {
   /// instance and therefore the hole package xD!
   String apiToken;
 
+  /// A string representation of the server, you want to get data from.
+  ///
+  /// e.g. "EUW1" for Europe West or "NA1" for North America.
+  String server;
+
   /// List contains every champion with their according mastery stat.
   List<ChampionMastery> champMasteriesList;
   List<Game> gameList;
@@ -23,7 +29,9 @@ class League {
   /// Requiers an api-token from the official
   /// League developer page:
   /// * https://developer.riotgames.com/
-  League({this.apiToken});
+  ///
+  /// e.g. "EUW1" for Europe West or "NA1" for North America.
+  League({@required this.apiToken, @required this.server});
 
   /// Get an Future instance of the Summoner() class.
   /// So use the
@@ -34,7 +42,8 @@ class League {
   /// ```
   /// method to get their name, account id, level and revision date.
   Future<Summoner> getSummonerInfo({String summonerName}) async {
-    var url = 'https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/$summonerName?api_key=$apiToken';
+    var url =
+        'https://$server.api.riotgames.com/lol/summoner/v4/summoners/by-name/$summonerName?api_key=$apiToken';
     var response = await http.get(
       url,
     );
@@ -56,7 +65,7 @@ class League {
   /// method to get their champion name, level and if chest aquired.
   Future<List<ChampionMastery>> getChampionMasteries({String summonerID}) async {
     var url =
-        'https://euw1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/$summonerID?api_key=$apiToken';
+        'https://$server.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/$summonerID?api_key=$apiToken';
     var response = await http.get(
       url,
     );
@@ -89,7 +98,8 @@ class League {
   /// ```
   /// method to get their champion name, level and if chest aquired.
   Future<List<Game>> getGameHistory({String accountID, String summonerName}) async {
-    var url = 'https://euw1.api.riotgames.com/lol/match/v4/matchlists/by-account/$accountID?api_key=$apiToken';
+    var url =
+        'https://$server.api.riotgames.com/lol/match/v4/matchlists/by-account/$accountID?api_key=$apiToken';
     var response = await http.get(
       url,
     );
@@ -98,7 +108,7 @@ class League {
     matchList.forEach(
       (game) {
         gameList.add(
-          Game.fromJson(json.decode(json.encode(game)), apiToken, summonerName),
+          Game.fromJson(json.decode(json.encode(game)), this.apiToken, summonerName, this.server),
         );
       },
     );
@@ -106,7 +116,8 @@ class League {
   }
 
   Future<Rank> getRankInfos({String summonerID}) async {
-    var url = 'https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/$summonerID?api_key=$apiToken';
+    var url =
+        'https://$server.api.riotgames.com/lol/league/v4/entries/by-summoner/$summonerID?api_key=$apiToken';
     var response = await http.get(
       url,
     );
@@ -118,12 +129,19 @@ class League {
       );
     } else {
       return Rank(
-          hotStreak: false, leagueId: '0', leaguePoints: 0, losses: 0, wins: 0, rank: 'unranked', tier: 'no tier');
+          hotStreak: false,
+          leagueId: '0',
+          leaguePoints: 0,
+          losses: 0,
+          wins: 0,
+          rank: 'unranked',
+          tier: 'no tier');
     }
   }
 
   Future<GameStat> getCurrentGame({String summonerID, String summonerName}) async {
-    var url = 'https://euw1.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/$summonerID?api_key=$apiToken';
+    var url =
+        'https://$server.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/$summonerID?api_key=$apiToken';
     var response = await http.get(
       url,
     );
