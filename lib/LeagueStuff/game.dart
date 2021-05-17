@@ -13,21 +13,24 @@ class Game {
   final String championName;
   final Future<GameStat> gameStat;
   final String apiToken;
+  final String server;
 
   /// A Game() instance to use to create a
   /// custom Game or use it with the League()
   /// instance to get the latest Game information.
-  Game(
-      {this.lane,
-      this.gameID,
-      this.championID,
-      this.time,
-      this.summonerName,
-      this.championName,
-      this.gameStat,
-      this.apiToken});
+  Game({
+    this.lane,
+    this.gameID,
+    this.championID,
+    this.time,
+    this.summonerName,
+    this.championName,
+    this.gameStat,
+    this.apiToken,
+    this.server,
+  });
 
-  factory Game.fromJson(Map<String, dynamic> json, String apiToken, String summonerName) {
+  factory Game.fromJson(Map<String, dynamic> json, String apiToken, String summonerName, String server) {
     return Game(
       lane: json['lane'],
       gameID: json['gameId'],
@@ -38,20 +41,19 @@ class Game {
       ),
       summonerName: summonerName,
       apiToken: apiToken,
+      server: server,
     );
   }
 
   ///
   Future<GameStat> stats() async {
-    var url =
-        'https://euw1.api.riotgames.com/lol/match/v4/matches/${this.gameID}?api_key=$apiToken';
+    var url = 'https://$server.api.riotgames.com/lol/match/v4/matches/${this.gameID}?api_key=$apiToken';
     var response = await http.get(
       url,
     );
     final matchList = json.decode(response.body);
     //print(matchList);
 
-    return GameStat.fromJson(
-        json.decode(json.encode(matchList)), this.championName, this.summonerName);
+    return GameStat.fromJson(json.decode(json.encode(matchList)), this.championName, this.summonerName);
   }
 }
