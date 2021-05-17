@@ -15,3 +15,5 @@
 ## [0.0.8] - Wrong URL fixed
 
 ## [0.0.9] - adapt to new riot current game API
+
+## [0.1.0] - server attribute to League class

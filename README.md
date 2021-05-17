@@ -1,7 +1,7 @@
 # dart_lol, the one good league of legends plugin for flutter
 
-A German package production :D 
-im 18 (16.1.2002) btw!!!
+A German package production :D
+im 19 (16.1.2002) btw!!!
 
 #Abitur2020 :D
 
@@ -59,8 +59,6 @@ league.getSummonerInfo(summonerName: emre).then((id) {
 ```
 
 If you like my repo and want to help me or whatever, please contact me via Discord or Telegram:
-
-Discord: geplutot#7866
 
 Telegram: [emredev](https://t.me/emredev)
 
