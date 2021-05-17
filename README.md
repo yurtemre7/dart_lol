@@ -16,7 +16,7 @@ How to use it properly:
 First you have to assign a ApiToken given by LoLApi (You need to wait approximately 3 weeks to get your project verified! Register yours [here](https://developer.riotgames.com/app-type))
 
 ```dart
-final league = League(apiToken: apiToken);
+final league = League(apiToken: apiToken, server: "EUW1");
 ```
 
 and furthermore
