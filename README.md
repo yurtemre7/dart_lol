@@ -12,6 +12,8 @@ How to use it properly:
 
 First you have to assign a ApiToken given by LoLApi (You need to wait approximately 3 weeks to get your project verified! Register yours [here](https://developer.riotgames.com/app-type))
 
+## Examples
+
 ```dart
 final league = League(apiToken: apiToken, server: "EUW1");
 ```
@@ -43,7 +45,11 @@ print(rankInfo.leaguePoints);
 print(rankInfo.tier);
 ```
 
-If you like my repo and want to help me or whatever, please contact me via Discord or Telegram:
+For more examples, head over to this file on my github: [test.dart](https://github.com/yurtemre7/dart_lol/blob/master/test/tests.dart)
+
+## Thanks
+
+If you like my repo and want to help me or whatever, please contact me via Telegram:
 
 Telegram: [emredev](https://t.me/emredev)
 
