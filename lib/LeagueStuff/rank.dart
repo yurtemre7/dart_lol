@@ -1,11 +1,11 @@
 class Rank {
-  final bool hotStreak;
-  final int wins;
-  final int losses;
-  final String rank;
-  final String leagueId;
-  final String tier;
-  final int leaguePoints;
+  final bool? hotStreak;
+  final int? wins;
+  final int? losses;
+  final String? rank;
+  final String? leagueId;
+  final String? tier;
+  final int? leaguePoints;
 
   /// A Rank() instance to use to create a
   /// custom summoner or use it with the League()

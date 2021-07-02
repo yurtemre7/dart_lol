@@ -1,14 +1,14 @@
 class Participant {
-  final String summonerName;
-  final String summonerID;
-  final int teamID;
-  final String championName;
-  final bool win;
-  final int kills;
-  final int deaths;
-  final int assists;
-  final int csScore;
-  final List<int> items;
+  final String? summonerName;
+  final String? summonerID;
+  final int? teamID;
+  final String? championName;
+  final bool? win;
+  final int? kills;
+  final int? deaths;
+  final int? assists;
+  final int? csScore;
+  final List<int?>? items;
 
   /// A Summoner() instance to use to create a
   /// custom summoner or use it with the League()

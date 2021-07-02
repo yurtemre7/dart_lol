@@ -1,6 +1,6 @@
 /// With this custom-made function it is possible to show the name
 /// of any given champion id
-String getChampNameByID(int champId) {
+String getChampNameByID(int? champId) {
   String champName = "";
 
   if (champId == 266) {

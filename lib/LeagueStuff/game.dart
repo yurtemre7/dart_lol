@@ -5,15 +5,15 @@ import 'game_stats.dart';
 import 'package:http/http.dart' as http;
 
 class Game {
-  final String lane;
-  final int gameID;
-  final int championID;
-  final String summonerName;
-  final int time;
-  final String championName;
-  final Future<GameStat> gameStat;
-  final String apiToken;
-  final String server;
+  final String? lane;
+  final int? gameID;
+  final int? championID;
+  final String? summonerName;
+  final int? time;
+  final String? championName;
+  final Future<GameStat>? gameStat;
+  final String? apiToken;
+  final String? server;
 
   /// A Game() instance to use to create a
   /// custom Game or use it with the League()
@@ -30,7 +30,8 @@ class Game {
     this.server,
   });
 
-  factory Game.fromJson(Map<String, dynamic> json, String apiToken, String summonerName, String server) {
+  factory Game.fromJson(
+      Map<String, dynamic> json, String apiToken, String? summonerName, String? server) {
     return Game(
       lane: json['lane'],
       gameID: json['gameId'],
@@ -47,13 +48,15 @@ class Game {
 
   ///
   Future<GameStat> stats() async {
-    var url = 'https://$server.api.riotgames.com/lol/match/v4/matches/${this.gameID}?api_key=$apiToken';
+    var url =
+        'https://$server.api.riotgames.com/lol/match/v4/matches/${this.gameID}?api_key=$apiToken';
     var response = await http.get(
-      url,
+      Uri.parse(url),
     );
     final matchList = json.decode(response.body);
     //print(matchList);
 
-    return GameStat.fromJson(json.decode(json.encode(matchList)), this.championName, this.summonerName);
+    return GameStat.fromJson(
+        json.decode(json.encode(matchList)), this.championName, this.summonerName);
   }
 }

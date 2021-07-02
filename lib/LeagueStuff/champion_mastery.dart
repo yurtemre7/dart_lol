@@ -1,11 +1,11 @@
 import 'champ_names.dart';
 
 class ChampionMastery {
-  final int championID;
-  final int championLevel;
-  final int championPoints;
-  final bool chestGranted;
-  final String championName;
+  final int? championID;
+  final int? championLevel;
+  final int? championPoints;
+  final bool? chestGranted;
+  final String? championName;
 
   /// A ChampionMastery() instance to use to create a
   /// custom ChampionMastery or use it with the League()

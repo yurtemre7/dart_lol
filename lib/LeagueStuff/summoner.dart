@@ -1,9 +1,9 @@
 class Summoner {
-  final String summonerName;
-  final int level;
-  final String accID;
-  final String summonerID;
-  final int lastTimeOnline;
+  final String? summonerName;
+  final int? level;
+  final String? accID;
+  final String? summonerID;
+  final int? lastTimeOnline;
 
   /// A Summoner() instance to use to create a
   /// custom summoner or use it with the League()

@@ -3,19 +3,19 @@ import 'package:dart_lol/LeagueStuff/participant.dart';
 import 'champ_names.dart';
 
 class GameStat {
-  final int gameCreation;
-  final int gameDuration;
-  final bool win;
-  final int kills, deaths, assists, cs;
-  final int playerIDinGame;
-  final int seasonID;
-  final String gameMode;
+  final int? gameCreation;
+  final int? gameDuration;
+  final bool? win;
+  final int? kills, deaths, assists, cs;
+  final int? playerIDinGame;
+  final int? seasonID;
+  final String? gameMode;
 
   final data;
 
   /// This list contains a Participant() Instance List with the number of actual players in a game.
   /// e.g. in a ranked game it would be 10 long (0-9).
-  final List<Participant> participants;
+  final List<Participant>? participants;
   //[participantId] and [stats][kills]or[deaths]or[assists]
   //and [timeline][role]or[lane]
 
@@ -36,18 +36,18 @@ class GameStat {
       this.participants,
       this.data});
 
-  factory GameStat.fromJson(Map<String, dynamic> json, String name, String summonerID) {
+  factory GameStat.fromJson(Map<String, dynamic> json, String? name, String? summonerID) {
     return GameStat(
       gameCreation: json['gameStartTime'],
       gameDuration: json['gameLength'],
-      /*kills: _kills(json['teams'], json['participantIdentities'], json['participants'], name),
+      kills: _kills(json['teams'], json['participantIdentities'], json['participants'], name),
       deaths: _deaths(json['teams'], json['participantIdentities'], json['participants'], name),
       assists: _assists(json['teams'], json['participantIdentities'], json['participants'], name),
       win: _teamIdFinder(json['teams'], json['participantIdentities'], json['participants'], name),
-      cs: _cs(json['teams'], json['participantIdentities'], json['participants'], name),*/
+      cs: _cs(json['teams'], json['participantIdentities'], json['participants'], name),
       seasonID: json['seasonId'],
-      /*playerIDinGame: _getPlayerIDinGame(json['participantIdentities'], summonerID),
-      participants: _getParticipants(json['participantIdentities'], json['participants']),*/
+      playerIDinGame: _getPlayerIDinGame(json['participantIdentities'], summonerID!),
+      participants: _getParticipants(json['participantIdentities'], json['participants']),
       data: json,
     );
   }
@@ -65,7 +65,7 @@ _getPlayerIDinGame(list, String summonerID) {
 }
 
 _teamIdFinder(List teams, list1, list2, name) {
-  bool won = false;
+  bool? won = false;
   List<Participant> players = _getParticipants(list1, list2);
   players.forEach((player) {
     if (player.championName == name) {
@@ -76,7 +76,7 @@ _teamIdFinder(List teams, list1, list2, name) {
 }
 
 _kills(List teams, list1, list2, name) {
-  int kills;
+  int? kills;
   List<Participant> players = _getParticipants(list1, list2);
   players.forEach((player) {
     if (player.championName == name) {
@@ -87,7 +87,7 @@ _kills(List teams, list1, list2, name) {
 }
 
 _deaths(List teams, list1, list2, name) {
-  int deaths;
+  int? deaths;
   List<Participant> players = _getParticipants(list1, list2);
   players.forEach((player) {
     if (player.championName == name) {
@@ -98,7 +98,7 @@ _deaths(List teams, list1, list2, name) {
 }
 
 _assists(List teams, list1, list2, name) {
-  int assists;
+  int? assists;
   List<Participant> players = _getParticipants(list1, list2);
   players.forEach((player) {
     if (player.championName == name) {
@@ -109,7 +109,7 @@ _assists(List teams, list1, list2, name) {
 }
 
 _cs(List teams, list1, list2, name) {
-  int cs;
+  int? cs;
   List<Participant> players = _getParticipants(list1, list2);
   players.forEach((player) {
     if (player.championName == name) {
@@ -133,7 +133,8 @@ List<Participant> _getParticipants(List<dynamic> names, List<dynamic> infos) {
         kills: infos[index]['stats']['kills'],
         deaths: infos[index]['stats']['deaths'],
         assists: infos[index]['stats']['deaths'],
-        csScore: infos[index]['stats']['totalMinionsKilled'] + infos[index]['stats']['neutralMinionsKilled'],
+        csScore: infos[index]['stats']['totalMinionsKilled'] +
+            infos[index]['stats']['neutralMinionsKilled'],
         items: [
           infos[index]['stats']['item1'],
           infos[index]['stats']['item2'],
