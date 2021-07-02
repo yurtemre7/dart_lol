@@ -1,39 +1,26 @@
 import 'package:dart_lol/dart_lol.dart';
 import 'package:dart_lol/key.dart';
 
-var summID = 'Gg7L1t2E8chqirSQGhg_M1PAtl52v-KAONcZUFeoBJAIhx1j';
-var summName = 'Rengar Says MIAW';
-var emre = 'Cord';
+var emre = 'buff yi rep mid';
 
 main() async {
   final league = League(apiToken: key, server: 'euw1');
   // print(league.server);
   var summonerInfo = await league.getSummonerInfo(summonerName: emre);
-  /*var url =
-      'https://euw1.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/${summonerInfo.summonerID}?api_key=$key';
-  var response = await http.get(
-    url,
-  );
 
-  print(response.body);*/
-  var crnt = await league.getCurrentGame(summonerID: summonerInfo.summonerID, summonerName: emre);
-  print(crnt.data);
+  print(summonerInfo.lastTimeOnline);
 
-  /*league.getSummonerInfo(summonerName: 'Ÿurt').then((summonerInfo) async {
-    print(summonerInfo.summonerName);
-    // Outputs Ÿurt
-    print(summonerInfo.level);
-    // Outputs current summoner level
-    // etc.
-    var games = await league.getGameHistory(
-        accountID: summonerInfo.accID, summonerName: 'Ÿurt');
-    games[0].stats().then((stats) {
-      print(stats.participants[stats.playerIDinGame - 1].items);
-    });
-    games[2].stats().then((stats) {
-      print(stats.participants[stats.playerIDinGame - 1].items);
-    });
-  });*/
+  print(summonerInfo.summonerName);
+  // Outputs buff yi rep mid
+  print(summonerInfo.level);
+  // Outputs current summoner level
 
-  //final summonerInfo = league.getSummonerInfo(summonerName: summName);
+  // etc.
+  var games = await league.getGameHistory(
+      accountID: summonerInfo.accID, summonerName: summonerInfo.summonerName);
+  var game1Stats = await games![0].stats();
+  print(game1Stats.participants![game1Stats.playerIDinGame! - 1].championName);
+
+  var game2Stats = await games[1].stats();
+  print(game2Stats.participants![game2Stats.playerIDinGame! - 1].championName);
 }
