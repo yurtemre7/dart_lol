@@ -1,9 +1,6 @@
 # dart_lol, the one good league of legends plugin for flutter
 
-A German package production :D
-im 19 (16.1.2002) btw!!!
-
-#Abitur2020 :D
+A German package production :D!
 
 ## Introduction / Einführung
 This is a simple good package for using the [League of Legends API](https://developer.riotgames.com/api-methods/) (will reference it as LoLApi)
@@ -22,40 +19,28 @@ final league = League(apiToken: apiToken, server: "EUW1");
 and furthermore
 
 ```dart
-league.getSummonerInfo(summonerName: 'Ÿurt').then((summonerInfo){
-    print(summonerInfo.summonerName);
-    // Outputs Ÿurt
-    print(summonerInfo.level);
-    // Outputs current summoner level
-    // etc.
-  });
+var player = await league.getSummonerInfo(summonerName: 'buff yi rep mid');
+print(player.level);
 ```
 
 A bigger example to how to use my League package (maybe you can see how it actually appeals with the flutter-ish style :D)
 
 ```dart
-league.getSummonerInfo(summonerName: emre).then((id) {
-    final game = league.getGameHistory(accountID: id.accID);
-    game.then((gameStat) {
+var player = await league.getSummonerInfo(summonerName: emre);
 
-      print(gameStat[1].championName);
-      // Always outputs your stats for any game in the List of GameStat
+var gameStat = await league.getGameHistory(accountID: player.accID);
 
-      gameStat[2].stats().then((ok) {
+print(gameStat[1].championName);
+// Always outputs your stats for any game in the List of GameStat
 
-        print(ok.participants[1].summonerName);
-        // Outputs the second summoners name
-        league
-            .getRankInfos(summonerID: ok.participants[6].summonerID)
-            .then((rankInfo) {
+var game2 = await gameStat[2].stats();
 
-          print(rankInfo.leaguePoints);
-          print(rankInfo.tier);
-          // Outputs the sixth summoners current league points and his current tier
-        });
-      });
-    });
-  });
+print(game2.participants[1].summonerName);
+// Outputs the second summoners name of the third game
+var rankInfo = await league.getRankInfos(summonerID: game2.participants[6].summonerID);
+// Outputs the sixth summoners current league points and his current tier
+print(rankInfo.leaguePoints);
+print(rankInfo.tier);
 ```
 
 If you like my repo and want to help me or whatever, please contact me via Discord or Telegram:
