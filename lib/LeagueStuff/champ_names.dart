@@ -431,7 +431,7 @@ String getChampNameByID(int? champId) {
   }
   if (champName == "") {
     //print("Champion not available, ID: $champId");
-    champName = 'Not avaible';
+    champName = 'Not available';
   }
   return champName;
 }
