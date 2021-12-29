@@ -22,11 +22,33 @@ class LolStorage {
     matchStorage.setItem(key, json);
   }
 
-  // List<String> getMatchHistories(String puuid) {
-  //
-  // }
+  List<dynamic> getMatchHistories(String puuid) {
+    final matchHistoriesString = matchHistoryStorage.getItem(puuid);
+    if (matchHistoriesString == null)
+      return <dynamic>[];
+    else return json.decode(matchHistoriesString);
+  }
 
-  saveMatchHistories(String key, String json) {
-    matchHistoryStorage.setItem(key, json);
+  /// 1. Get Match Histories
+  /// 2. Create a set
+  /// 3.
+  /// 4. Save to storage
+  saveMatchHistories(String puuid, String myJson) {
+    final oldMatches = getMatchHistories(puuid);
+    print("There are ${oldMatches.length} old matches");
+    final newMatches = json.decode(myJson) as List<dynamic>;
+    print("There are ${newMatches.length} new matches");
+    /// No duplicates
+    Set<String> mySet = {};
+    oldMatches.forEach((element) {
+      mySet.add(element);
+    });
+    newMatches.forEach((element) {
+      mySet.add(element);
+    });
+    print("There are ${mySet.length} total matches");
+    final that = mySet.toList();
+    String theJson = jsonEncode(that);
+    matchHistoryStorage.setItem(puuid, theJson);
   }
 }

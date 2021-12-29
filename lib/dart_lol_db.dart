@@ -14,11 +14,7 @@ import 'lol_storage.dart';
 
 class LeagueDB extends LeagueAPI {
 
-  LeagueDB({required apiToken, required String server}) : super(apiToken: apiToken, server: server) {
-    this.server = server.toLowerCase();
-    if(this.server == "na1")
-      this.matchServer = "americas";
-  }
+  LeagueDB({required apiToken, required String server}) : super(apiToken: apiToken, server: server);
 
   /// Get summoner from database
   /// If fallbackAPI == true then if not found then will call RIOT API
@@ -34,12 +30,12 @@ class LeagueDB extends LeagueAPI {
   /// https://americas.api.riotgames.com/lol/match/v5/matches/NA1_4056249988?api_key=RGAPI-8567f359-587c-4742-a791-7fd5748be91a
   /// Get a match from RIOT api MatchV5
   /// Takes a matchID from matchHistoryV5
-  Future<Match?> getMatch(String matchId, bool fallbackAPI) async {
+  Future<Match?> getMatch(String matchId, {bool fallbackAPI = true}) async {
     final m = storage.matchStorage.getItem("$matchId");
     if(m != null) {
       final valueMap = json.decode(m);
       return Match.fromJson(valueMap);
-    }else if (fallbackAPI == false)
+    } else if (fallbackAPI == false)
       return null;
     var url =
         'https://$matchServer.api.riotgames.com/lol/match/v5/matches/$matchId?api_key=$apiToken';
@@ -47,4 +43,9 @@ class LeagueDB extends LeagueAPI {
     storage.saveMatch(matchId, response.body);
     return Match.fromJson(json.decode(response.body,),);
   }
+
+  // Future<List<dynamic>> getMatchesFromDB(String puuid, {int start = 0, int end = 0, bool fallBackAPI = true}) {
+  //   final matchesString = storage.matchHistoryStorage.getItem(puuid);
+  //   final matches =
+  // }
 }

@@ -11,7 +11,7 @@ import 'LeagueStuff/summoner.dart';
 import 'helper/logging.dart';
 import 'lol_storage.dart';
 
-class LeagueAPI extends RateLimiter{
+class LeagueAPI extends RateLimiter {
 
   /// Local storage so we can save match histories
   final storage = LolStorage();
@@ -28,8 +28,6 @@ class LeagueAPI extends RateLimiter{
 
   /// List contains every champion with their according mastery stat.
   List<ChampionMastery>? champMasteriesList;
-
-
 
   /// Class League() instance to use to get several
   /// information about an player.
@@ -60,6 +58,23 @@ class LeagueAPI extends RateLimiter{
     final s = Summoner.fromJson(json.decode(response));
     storage.saveSummoner(summonerName, response);
     return SummonerResponse(summoner: s, leagueResponse: null);
+  }
+
+  /// Get an Future instance of the Game class as a List of it.
+  /// So use the
+  /// ```
+  /// .then(onValue){
+  ///   onValue[x]  //where x is the game you want (0 most-recent)
+  /// }
+  /// ```
+  /// method to get their champion name, level and if chest aquired.
+  /// https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/8da3a1nbj_aeMjIW59139Hx545oBL9kcuQtvkrWImpXJD6IQD_UQ9xejArpgzfQxcxD4LMnwVtD-3g/ids?start=0&count=20
+  Future<List<dynamic>> getMatches(String puuid, {int start = 0, int end = 100}) async {
+    var url = 'https://$matchServer.api.riotgames.com/lol/match/v5/matches/by-puuid/$puuid/ids?start=$start&count=$end&api_key=$apiToken';
+    var response = await http.get(Uri.parse(url));
+    final list = json.decode(response.body);
+    storage.saveMatchHistories(puuid, response.body);
+    return list;
   }
 
   Future<String> makeApiCall(String url) async {
@@ -166,20 +181,5 @@ class LeagueAPI extends RateLimiter{
       );
     }
     return null;
-  }
-
-  /// Get an Future instance of the Game class as a List of it.
-  /// So use the
-  /// ```
-  /// .then(onValue){
-  ///   onValue[x]  //where x is the game you want (0 most-recent)
-  /// }
-  /// ```
-  /// method to get their champion name, level and if chest aquired.
-  /// https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/8da3a1nbj_aeMjIW59139Hx545oBL9kcuQtvkrWImpXJD6IQD_UQ9xejArpgzfQxcxD4LMnwVtD-3g/ids?start=0&count=20
-  Future<List<dynamic>> getMatches(String puuid, {int start = 0, int end = 100}) async {
-    var url = 'https://$matchServer.api.riotgames.com/lol/match/v5/matches/by-puuid/$puuid/ids?start=$start&count=$end&api_key=$apiToken';
-    var response = await http.get(Uri.parse(url));
-    return json.decode(response.body);
   }
 }
