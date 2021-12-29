@@ -11,10 +11,15 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^0.13.3
+  isar: 0.4.0
+  isar_flutter_libs: 0.4.0 # contains the binaries
+  localstorage: ^4.0.0+1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   test: ^1.0.0
+  isar_generator: 0.4.0
+  build_runner: any
 
 flutter:

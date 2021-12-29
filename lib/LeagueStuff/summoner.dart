@@ -1,28 +1,44 @@
+
 class Summoner {
-  final String? summonerName;
-  final int? level;
-  final String? accID;
-  final String? summonerID;
-  final int? lastTimeOnline;
+  String? id;
+  String? accountId;
+  String? puuid;
+  String? name;
+  int? profileIconId;
+  int? revisionDate;
+  int? summonerLevel;
+  List<String>? matches;
 
-  /// A Summoner() instance to use to create a
-  /// custom summoner or use it with the League()
-  /// instance to get real-time information.
-  Summoner({
-    this.summonerName,
-    this.level,
-    this.accID,
-    this.summonerID,
-    this.lastTimeOnline,
-  });
+  Summoner(
+      {this.id,
+        this.accountId,
+        this.puuid,
+        this.name,
+        this.profileIconId,
+        this.revisionDate,
+        this.summonerLevel,
+        this.matches});
 
-  factory Summoner.fromJson(Map<String, dynamic> json) {
-    return Summoner(
-      summonerName: json['name'],
-      level: json['summonerLevel'],
-      summonerID: json['id'],
-      accID: json['accountId'],
-      lastTimeOnline: json['revisionDate'],
-    );
+  Summoner.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    accountId = json['accountId'];
+    puuid = json['puuid'];
+    name = json['name'];
+    profileIconId = json['profileIconId'];
+    revisionDate = json['revisionDate'];
+    summonerLevel = json['summonerLevel'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['accountId'] = this.accountId;
+    data['puuid'] = this.puuid;
+    data['name'] = this.name;
+    data['profileIconId'] = this.profileIconId;
+    data['revisionDate'] = this.revisionDate;
+    data['summonerLevel'] = this.summonerLevel;
+    data['matches'] = this.matches;
+    return data;
   }
 }
