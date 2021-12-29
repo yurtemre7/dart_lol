@@ -15,7 +15,11 @@ class LolStorage {
   }
 
   Map<String, dynamic> getMatch(String matchId) {
-    return json.decode(matchStorage.getItem("$matchId"));
+    print("Getting match $matchId from database");
+    final matchString = matchStorage.getItem("$matchId");
+    if(matchString == null)
+      return {};
+    else return json.decode(matchString);
   }
 
   saveMatch(String key, String json) {
@@ -29,25 +33,26 @@ class LolStorage {
     else return json.decode(matchHistoriesString);
   }
 
-  /// 1. Get Match Histories
-  /// 2. Create a set
-  /// 3.
-  /// 4. Save to storage
+  /// 1. Get old match histories
+  /// 2. Convert new match histories
+  /// 3. Add 1 and 2 to a Set
+  /// 4. Save Set to local storage
   saveMatchHistories(String puuid, String myJson) {
     final oldMatches = getMatchHistories(puuid);
-    print("There are ${oldMatches.length} old matches");
-    final newMatches = json.decode(myJson) as List<dynamic>;
-    print("There are ${newMatches.length} new matches");
-    /// No duplicates
-    Set<String> mySet = {};
+    print("${oldMatches.length} old matches");
+    final newMatches = json.decode(myJson);
+    print("${newMatches.length} new matches");
+    print(newMatches.toString());
+    /// Prevent duplicates
+    Set<String> matchesSet = {};
     oldMatches.forEach((element) {
-      mySet.add(element);
+      matchesSet.add(element);
     });
     newMatches.forEach((element) {
-      mySet.add(element);
+      matchesSet.add(element);
     });
-    print("There are ${mySet.length} total matches");
-    final that = mySet.toList();
+    print("${matchesSet.length} total matches");
+    final that = matchesSet.toList();
     String theJson = jsonEncode(that);
     matchHistoryStorage.setItem(puuid, theJson);
   }

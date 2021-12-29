@@ -31,9 +31,9 @@ class LeagueDB extends LeagueAPI {
   /// Get a match from RIOT api MatchV5
   /// Takes a matchID from matchHistoryV5
   Future<Match?> getMatch(String matchId, {bool fallbackAPI = true}) async {
-    final m = storage.matchStorage.getItem("$matchId");
-    if(m != null) {
-      final valueMap = json.decode(m);
+    final valueMap = storage.getMatch("$matchId");
+    if(valueMap.isNotEmpty) {
+      print("Match received from database");
       return Match.fromJson(valueMap);
     } else if (fallbackAPI == false)
       return null;
@@ -44,8 +44,18 @@ class LeagueDB extends LeagueAPI {
     return Match.fromJson(json.decode(response.body,),);
   }
 
-  // Future<List<dynamic>> getMatchesFromDB(String puuid, {int start = 0, int end = 0, bool fallBackAPI = true}) {
-  //   final matchesString = storage.matchHistoryStorage.getItem(puuid);
-  //   final matches =
-  // }
+  Future<List<dynamic>> getMatchesFromDB(String puuid, {bool allMatches = true, int start = 0, int count = 100, bool fallBackAPI = true}) async {
+    print("Getting matches from DB");
+    final list = storage.getMatchHistories(puuid);
+    if (fallBackAPI && list.isEmpty) {
+      return getMatches(puuid, start: start, count: count);
+    }
+    if(allMatches)
+      return list;
+    final returnList = [];
+    for (int i = start; i < count; i++) {
+      returnList.add(list[i]);
+    }
+    return returnList;
+  }
 }
