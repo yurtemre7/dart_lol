@@ -10,8 +10,8 @@ class LolStorage {
     return json.decode(summonerStorage.getItem(summonerName));
   }
 
-  saveSummoner(String key, String json) {
-    summonerStorage.setItem(key, json);
+  saveSummoner(String summonerName, String summonerJson) {
+    summonerStorage.setItem(summonerName, summonerJson);
   }
 
   Map<String, dynamic> getMatch(String matchId) {
@@ -22,8 +22,8 @@ class LolStorage {
     else return json.decode(matchString);
   }
 
-  saveMatch(String key, String json) {
-    matchStorage.setItem(key, json);
+  saveMatch(String matchId, String matchJson) {
+    matchStorage.setItem(matchId, matchJson);
   }
 
   List<dynamic> getMatchHistories(String puuid) {

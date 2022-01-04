@@ -1,7 +1,9 @@
+import 'dart:collection';
 import 'dart:convert';
 
-import 'package:dart_lol/LeagueStuff/responses/summoner_response.dart';
+import 'package:dart_lol/LeagueStuff/responses/league_response.dart';
 import 'package:dart_lol/dart_lol_db.dart';
+import 'package:dart_lol/LeagueStuff/match.dart';
 import 'package:dart_lol/rate_limiter.dart';
 import 'package:http/http.dart' as http;
 import 'LeagueStuff/champion_mastery.dart';
@@ -10,6 +12,12 @@ import 'LeagueStuff/rank.dart';
 import 'LeagueStuff/summoner.dart';
 import 'helper/logging.dart';
 import 'lol_storage.dart';
+
+enum APIType {
+  summoner,
+  matchOverviews,
+  match
+}
 
 class LeagueAPI extends RateLimiter {
 
@@ -36,10 +44,18 @@ class LeagueAPI extends RateLimiter {
   /// * https://developer.riotgames.com/
   ///
   /// e.g. "EUW1" for Europe West or "NA1" for North America.
-  LeagueAPI({required this.apiToken, required String server}) {
+  LeagueAPI({
+    required this.apiToken,
+    required String server,
+    int appLowerLimitCount = 20,
+    int appUpperLimitCount = 100}) {
     this.server = server.toLowerCase();
     if(this.server == "na1")
       this.matchServer = "americas";
+
+    //custom rate limit stuff
+    this.appMaxCallsPerSecond = appLowerLimitCount;
+    this.appMaxCallsPerTwoMinutes = appUpperLimitCount;
   }
 
   /// Get an Future instance of the Summoner() class.
@@ -50,12 +66,12 @@ class LeagueAPI extends RateLimiter {
   /// }
   /// ```
   /// method to get their name, account id, level and revision date.
-  Future<SummonerResponse> getSummonerInfo(String summonerName) async {
+  Future<LeagueResponse> getSummonerInfo(String summonerName) async {
     var url = 'https://$server.api.riotgames.com/lol/summoner/v4/summoners/by-name/$summonerName?api_key=$apiToken';
-    var response = await makeApiCall(url);
-    final s = Summoner.fromJson(json.decode(response));
-    storage.saveSummoner(summonerName, response);
-    return SummonerResponse(summoner: s, leagueResponse: null);
+    var response = await makeApiCall(url, APIType.summoner);
+    if (response.summoner != null)
+      storage.saveSummoner(summonerName, response.summoner!.toJson().toString());
+    return response;
   }
 
   /// Get an Future instance of the Game class as a List of it.
@@ -75,23 +91,45 @@ class LeagueAPI extends RateLimiter {
     return list;
   }
 
-  Future<String> makeApiCall(String url) async {
+  Queue<String> apiCallsQueue = new Queue<String>();
+  /// Queue used when rate limit hit
+  ///
+  Future<LeagueResponse> makeApiCall(String url, APIType apiType) async {
     final now = DateTime.now().millisecondsSinceEpoch;
 
+    if(apiCallsQueue.isNotEmpty) {
+      apiCallsQueue.add(url);
+      url = apiCallsQueue.first;
+    }
+
     if(!passesApiCallsRateLimit(now))
-      return "Too many api calls";
-    else if (!passesHeaderRateLimit(now))
-      return "Too many api calls";
+      print("429 maybe");
+    if (!passesHeaderRateLimit(now))
+      print("429 maybe");
 
     apiCalls.add(now);
     print("url: $url");
     var response = await http.get(Uri.parse(url));
     final headers = response.headers;
     updateHeaders(headers);
-    if (response.statusCode == 200)
-      return response.body;
-    else if (response.statusCode == 429) {
+    if (response.statusCode == 200) {
+      switch(apiType) {
+        case APIType.summoner: {
+          final s = Summoner.fromJson(json.decode(response.body));
+          return returnLeagueResponse(summoner: s);
+        }
+        case APIType.matchOverviews:
+          final list = json.decode(response.body);
+          return returnLeagueResponse(matchOverviews: list);
+        case APIType.match:
+          final match = Match.fromJson(json.decode(response.body));
+          return returnLeagueResponse(match: match);
+      }
+    }else if (response.statusCode == 429) {
       var that = headers["retry-after"];
+    } else {
+      //some other error, return normal shit
+
     }
     //401 unauthorized
     //403 forbidden
@@ -102,7 +140,7 @@ class LeagueAPI extends RateLimiter {
     //500 internal server error
     //503 server unavailable
     print("At bottom");
-    return "";
+    return returnLeagueResponse();
   }
 
   /// Get an Future instance of the ChampionMasteries class.
