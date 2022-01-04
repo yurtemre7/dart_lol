@@ -1,10 +1,10 @@
-import 'package:dart_lol/dart_lol.dart';
+import 'package:dart_lol/dart_lol_db.dart';
 import 'package:dart_lol/key.dart';
 
 var emre = 'buff yi rep mid';
 
 main() async {
-  final league = League(apiToken: key, server: 'euw1');
+  final league = LeagueDB(apiToken: key, server: 'euw1');
   // print(league.server);
   var summonerInfo = await league.getSummonerInfo(summonerName: emre);
 
