@@ -12,7 +12,10 @@ class LeagueDB extends LeagueAPI {
     required String server,
     int lowerLimitCount = 20,
     int upperLimitCount = 100}) :
-        super(apiToken: apiToken, server: server, appLowerLimitCount: lowerLimitCount, appUpperLimitCount: upperLimitCount);
+        super(apiToken: apiToken,
+          server: server,
+          appLowerLimitCount: lowerLimitCount,
+          appUpperLimitCount: upperLimitCount);
 
   /// Get summoner from database
   /// If fallbackAPI == true then if not found then will call RIOT API
@@ -39,8 +42,7 @@ class LeagueDB extends LeagueAPI {
       return returnLeagueResponse();
     else {
       var url = 'https://$matchServer.api.riotgames.com/lol/match/v5/matches/$matchId?api_key=$apiToken';
-      var lr = makeApiCall(url, APIType.match) as LeagueResponse;
-      storage.saveMatch(matchId, lr.match!.toJson().toString());
+      var lr = makeApiCall(url, APIType.match);
       return lr;
     }
   }

@@ -92,55 +92,50 @@ class LeagueAPI extends RateLimiter {
   }
 
   Queue<String> apiCallsQueue = new Queue<String>();
-  /// Queue used when rate limit hit
-  ///
   Future<LeagueResponse> makeApiCall(String url, APIType apiType) async {
     final now = DateTime.now().millisecondsSinceEpoch;
-
-    if(apiCallsQueue.isNotEmpty) {
-      apiCallsQueue.add(url);
-      url = apiCallsQueue.first;
-    }
-
+    // if(apiCallsQueue.isNotEmpty) {
+    //   apiCallsQueue.add(url);
+    //   url = apiCallsQueue.first;
+    // }
     if(!passesApiCallsRateLimit(now))
-      print("429 maybe");
+      returnLeagueResponse(responseCode: 429, retryTimestamp: now + 30000);
     if (!passesHeaderRateLimit(now))
-      print("429 maybe");
+      returnLeagueResponse(responseCode: 429, retryTimestamp: now + 30000);
 
     apiCalls.add(now);
     print("url: $url");
     var response = await http.get(Uri.parse(url));
     final headers = response.headers;
     updateHeaders(headers);
+    print(response.body);
     if (response.statusCode == 200) {
       switch(apiType) {
-        case APIType.summoner: {
+        case APIType.summoner:{
           final s = Summoner.fromJson(json.decode(response.body));
           return returnLeagueResponse(summoner: s);
         }
-        case APIType.matchOverviews:
+        case APIType.matchOverviews: {
           final list = json.decode(response.body);
           return returnLeagueResponse(matchOverviews: list);
-        case APIType.match:
+        }
+        case APIType.match: {
           final match = Match.fromJson(json.decode(response.body));
+          storage.saveMatch(match.metadata!.matchId!, response.body);
           return returnLeagueResponse(match: match);
+        }
       }
     }else if (response.statusCode == 429) {
-      var that = headers["retry-after"];
+      final tempRetryHeader = headers["retry-after"];
+      final secondsToWait = int.parse(tempRetryHeader!);
+      final msToWait = secondsToWait * 1000;
+      final retryTimeStamp = msToWait + now;
+      return returnLeagueResponse(
+          responseCode: response.statusCode,
+          retryTimestamp: retryTimeStamp);
     } else {
-      //some other error, return normal shit
-
+      return returnLeagueResponse(responseCode: response.statusCode);
     }
-    //401 unauthorized
-    //403 forbidden
-    //404 not found
-    //415 unsupported media type
-    //429 rate limit
-    //
-    //500 internal server error
-    //503 server unavailable
-    print("At bottom");
-    return returnLeagueResponse();
   }
 
   /// Get an Future instance of the ChampionMasteries class.

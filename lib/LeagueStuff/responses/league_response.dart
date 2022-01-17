@@ -3,7 +3,6 @@ import 'package:dart_lol/LeagueStuff/match.dart';
 
 class LeagueResponse {
   final int? responseCode;
-  final String? responseMessage;
   final int? retryTimestamp;
 
   final double? appCurrentRateLimitPercentage;
@@ -15,7 +14,6 @@ class LeagueResponse {
 
   LeagueResponse({
     this.responseCode,
-    this.responseMessage,
     this.retryTimestamp,
     this.appCurrentRateLimitPercentage,
     this.headerCurrentRateLimitPercentage,

@@ -19,14 +19,12 @@ class RateLimiter {
 
   LeagueResponse returnLeagueResponse({
     int? responseCode = 200,
-    String? responseMessage = "200 ok",
     int? retryTimestamp = 0,
     Summoner? summoner,
     List<String>? matchOverviews,
     Match? match}) {
     return LeagueResponse(
       responseCode: responseCode,
-      responseMessage: responseMessage,
       retryTimestamp: retryTimestamp,
       appCurrentRateLimitPercentage: appUpperCurrent/appMaxCallsPerTwoMinutes,
       headerCurrentRateLimitPercentage: headerUpperCurrent/headerMaxCallsPerTwoMinutes,

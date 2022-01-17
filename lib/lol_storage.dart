@@ -23,6 +23,7 @@ class LolStorage {
   }
 
   saveMatch(String matchId, String matchJson) {
+    print("Saving match $matchId to database");
     matchStorage.setItem(matchId, matchJson);
   }
 
