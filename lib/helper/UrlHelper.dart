@@ -5,7 +5,7 @@ class UrlHelper {
   final DDRAGON_BASE = "https://ddragon.leagueoflegends.com/";
 
   Future<String> getRiotGamesAPIVersion() async {
-    final versionList = await DDragonAPI().getVersions();
+    final versionList = await DDragonAPI().getVersionsFromApi();
     return versionList[0];
   }
 

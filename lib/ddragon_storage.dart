@@ -15,7 +15,7 @@ class DDragonStorage {
     return dDragonStorage.getItem(versionsLastSaved);
   }
 
-  List<String> getVersions() {
+  List<String> getVersionsFromDB() {
     return dDragonStorage.getItem(versionsKey);
   }
 }
