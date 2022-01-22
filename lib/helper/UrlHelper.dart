@@ -7,10 +7,7 @@ class UrlHelper {
   Future<String> getRiotGamesAPIVersion() async {
     final versionList = await DDragonAPI().getVersionsFromApi();
     return versionList[0];
-  }
-
-  String buildChampionImage(String imageEnding) {
-    return "";
+    //return "12.2.1";
   }
 
   //https://ddragon.leagueoflegends.com/api/versions.json
@@ -18,10 +15,14 @@ class UrlHelper {
     return "${DDRAGON_BASE}api/versions.json";
   }
 
-  // String buildChampions() {
-  //
-  // }
+  //http://ddragon.leagueoflegends.com/cdn/9.11.1/data/en_US/champion.json
+  Future<String> buildChampions() async {
+    final v = await getRiotGamesAPIVersion();
+    return "${DDRAGON_BASE}cdn/$v/data/en_US/champion.json";
+  }
 
-
-
+  Future<String> buildChampionImage(String imageEnding) async {
+    final v = await getRiotGamesAPIVersion();
+    return "${DDRAGON_BASE}cdn/$v/img/champion/${imageEnding}";
+  }
 }

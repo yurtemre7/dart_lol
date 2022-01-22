@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:dart_lol/helper/UrlHelper.dart';
 import 'dart:convert';
 
+import 'LeagueStuff/champions.dart';
+
 class DDragonAPI {
 
   //https://ddragon.leagueoflegends.com/api/versions.json
@@ -15,7 +17,13 @@ class DDragonAPI {
     return stringList;
   }
 
-
-
-
+  //https://ddragon.leagueoflegends.com/cdn/12.2.1/data/en_US/champion.json
+  Future<Champions> getChampionsFromApi() async {
+    final url = await UrlHelper().buildChampions();
+    print("champions url: $url");
+    final response = await http.get(Uri.parse(url));
+    final list = json.decode(response.body);
+    DDragonStorage().saveChampions(response.body);
+    return Champions.fromJson(list);
+  }
 }
