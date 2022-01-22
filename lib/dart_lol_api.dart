@@ -79,14 +79,22 @@ class LeagueAPI extends RateLimiter {
   /// ```
   /// method to get their champion name, level and if chest aquired.
   /// https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/8da3a1nbj_aeMjIW59139Hx545oBL9kcuQtvkrWImpXJD6IQD_UQ9xejArpgzfQxcxD4LMnwVtD-3g/ids?start=0&count=20
-  Future<List<dynamic>> getMatches(String puuid,
+  Future<List<String>> getMatches(String puuid,
       {int start = 0, int count = 100}) async {
     var url =
         'https://$matchServer.api.riotgames.com/lol/match/v5/matches/by-puuid/$puuid/ids?start=$start&count=$count&api_key=$apiToken';
     var response = await http.get(Uri.parse(url));
-    final list = json.decode(response.body);
+    final list = json.decode(response.body) as List<dynamic>;
     storage.saveMatchHistories(puuid, response.body);
-    return list;
+
+    /// Build list of Strings because it's a <dyanmic>[]
+    final returnList = <String>[];
+    list.forEach((element) {
+      returnList.add(element as String);
+    });
+    returnList.sort();
+
+    return returnList;
   }
 
   Future<LeagueResponse> makeApiCall(String url, APIType apiType) async {

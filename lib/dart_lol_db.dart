@@ -51,7 +51,7 @@ class LeagueDB extends LeagueAPI {
     }
   }
 
-  Future<List<dynamic>> getMatchesFromDb(String puuid,
+  Future<List<String>> getMatchesFromDb(String puuid,
       {bool allMatches = true,
       int start = 0,
       int count = 100,
@@ -61,11 +61,19 @@ class LeagueDB extends LeagueAPI {
     if (fallBackAPI && list.isEmpty) {
       return getMatches(puuid, start: start, count: count);
     }
-    if (allMatches) return list;
-    final returnList = [];
-    for (int i = start; i < count; i++) {
-      returnList.add(list[i]);
+    if (allMatches) {
+      final returnList = <String>[];
+      list.forEach((element) {
+        returnList.add(element as String);
+      });
+      returnList.sort();
+      return returnList;
     }
-    return returnList;
-  }
+      final returnList = <String>[];
+      for (int i = start; i < count; i++) {
+        returnList.add(list[i]);
+      }
+      returnList.sort();
+      return returnList;
+    }
 }
