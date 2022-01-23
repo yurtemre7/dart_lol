@@ -21,15 +21,21 @@ class DDragonStorage {
     return dDragonStorage.getItem(versionsLastSaved);
   }
 
-  String getRiotGamesAPIVersion() {
-    return dDragonStorage.getItem(versionsKey)[0];
+  Future<String> getRiotGamesAPIVersion() async {
+    final version = dDragonStorage.getItem(versionsKey);
+    print(version);
+    if(version == null) {
+      final versionAPI = await DDragonAPI().getVersionsFromApi();
+      print(versionAPI);
+      return versionAPI[0];
+    }
+    return version[0];
   }
 
   /// Champions
   final championsKey = "champions_key";
   final championsLastSaved = "champions_last_saved";
   saveChampions(String champions) {
-    print(champions);
     dDragonStorage.setItem(championsKey, champions);
     dDragonStorage.setItem(championsLastSaved, DateTime.now().millisecondsSinceEpoch);
   }
