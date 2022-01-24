@@ -3,7 +3,9 @@ class Summoner {
   final int? level;
   final String? accID;
   final String? summonerID;
-  final int? lastTimeOnline;
+  final DateTime? lastTimeOnline;
+  final int? profileIconID;
+  final String? puuid;
 
   /// A Summoner() instance to use to create a
   /// custom summoner or use it with the League()
@@ -14,6 +16,8 @@ class Summoner {
     this.accID,
     this.summonerID,
     this.lastTimeOnline,
+    this.puuid,
+    this.profileIconID,
   });
 
   factory Summoner.fromJson(Map<String, dynamic> json) {
@@ -22,7 +26,9 @@ class Summoner {
       level: json['summonerLevel'],
       summonerID: json['id'],
       accID: json['accountId'],
-      lastTimeOnline: json['revisionDate'],
+      lastTimeOnline: DateTime.fromMillisecondsSinceEpoch(json['revisionDate']),
+      puuid: json['puuid'],
+      profileIconID: json['profileIconId'],
     );
   }
 }
