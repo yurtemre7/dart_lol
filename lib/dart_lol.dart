@@ -19,6 +19,20 @@ class League {
   /// e.g. "EUW1" for Europe West or "NA1" for North America.
   String? server;
 
+  Map<String, String> serverMap = {
+    'na1': 'americas',
+    'br1': 'americas',
+    'la1': 'americas',
+    'la2': 'americas',
+    'oc1': 'americas',
+    'euw1': 'europe',
+    'eun1': 'europe',
+    'tr1': 'europe',
+    'ru': 'europe',
+    'kr': 'asia',
+    'jp1': 'asia',
+  };
+
   /// List contains every champion with their according mastery stat.
   List<ChampionMastery>? champMasteriesList;
   List<Game>? gameList;
@@ -48,7 +62,7 @@ class League {
     var response = await http.get(
       Uri.parse(url),
     );
-    //print(response.body);
+    print(response.body);
     return Summoner.fromJson(
       json.decode(
         response.body,
@@ -98,7 +112,7 @@ class League {
   /// method to get their champion name, level and if chest aquired.
   Future<List<Game>?> getGameHistory({String? accountID, String? summonerName}) async {
     var url =
-        'https://$server.api.riotgames.com/lol/match/v4/matchlists/by-account/$accountID?api_key=$apiToken';
+        'https://${serverMap[server]}.api.riotgames.com/lol/match/v4/matchlists/by-account/$accountID?api_key=$apiToken';
     var response = await http.get(
       Uri.parse(url),
     );
@@ -111,6 +125,33 @@ class League {
         );
       },
     );
+    return gameList;
+  }
+
+  Future<List<Game>?> getGameHistory2(
+      {required String puuid, required String summonerName, int start = 0, int count = 20}) async {
+    var url =
+        'https://${serverMap[server]}.api.riotgames.com/lol/match/v5/matches/by-puuid/$puuid/ids?start=$start&count=$count&api_key=$apiToken';
+    var response = await http.get(
+      Uri.parse(url),
+    );
+    final matchIdList = json.decode(response.body);
+    print(matchIdList);
+    gameList = [];
+    for (String id in matchIdList) {
+      var url = 'https://${serverMap[server]}.api.riotgames.com/lol/match/v5/matches/$id?api_key=$apiToken';
+      var response = await http.get(
+        Uri.parse(url),
+      );
+      final match = json.decode(response.body);
+      print("\nID: $id");
+      print(match);
+      print("---");
+      gameList!.add(
+        Game.fromJson(json.decode(json.encode(match)), this.apiToken, summonerName, this.server),
+      );
+    }
+
     return gameList;
   }
 
