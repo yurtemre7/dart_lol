@@ -133,8 +133,7 @@ List<Participant> _getParticipants(List<dynamic> names, List<dynamic> infos) {
         kills: infos[index]['stats']['kills'],
         deaths: infos[index]['stats']['deaths'],
         assists: infos[index]['stats']['deaths'],
-        csScore: infos[index]['stats']['totalMinionsKilled'] +
-            infos[index]['stats']['neutralMinionsKilled'],
+        csScore: infos[index]['stats']['totalMinionsKilled'] + infos[index]['stats']['neutralMinionsKilled'],
         items: [
           infos[index]['stats']['item1'],
           infos[index]['stats']['item2'],

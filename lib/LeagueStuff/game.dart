@@ -30,8 +30,7 @@ class Game {
     this.server,
   });
 
-  factory Game.fromJson(
-      Map<String, dynamic> json, String apiToken, String? summonerName, String? server) {
+  factory Game.fromJson(Map<String, dynamic> json, String apiToken, String? summonerName, String? server) {
     return Game(
       lane: json['lane'],
       gameID: json['gameId'],
@@ -48,15 +47,13 @@ class Game {
 
   ///
   Future<GameStat> stats() async {
-    var url =
-        'https://$server.api.riotgames.com/lol/match/v4/matches/${this.gameID}?api_key=$apiToken';
+    var url = 'https://$server.api.riotgames.com/lol/match/v4/matches/${this.gameID}?api_key=$apiToken';
     var response = await http.get(
       Uri.parse(url),
     );
-    final matchList = json.decode(response.body);
+    final match = json.decode(response.body);
     //print(matchList);
 
-    return GameStat.fromJson(
-        json.decode(json.encode(matchList)), this.championName, this.summonerName);
+    return GameStat.fromJson(json.decode(json.encode(match)), this.championName, this.summonerName);
   }
 }
