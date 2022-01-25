@@ -10,6 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  get_it: ^7.2.0
   http: ^0.13.3
   isar: 0.4.0
   isar_flutter_libs: 0.4.0 # contains the binaries

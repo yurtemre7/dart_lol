@@ -7,9 +7,12 @@ import 'ddragon_api.dart';
 
 class DDragonStorage {
   final dDragonStorage = new LocalStorage('ddragon_storage');
-
   final versionsKey = "ddragon_versions";
   final versionsLastSaved = "versions_last_saved";
+
+  //final dDragonApi = DDragonAPI();
+
+  var currentVersion = "";
 
   /// VERSIONS
   saveVersions(List<String> versions) {
@@ -21,15 +24,22 @@ class DDragonStorage {
     return dDragonStorage.getItem(versionsLastSaved);
   }
 
-  Future<String> getRiotGamesAPIVersion() async {
+  Future<String> getVersionFromDb() async {
+    if(currentVersion != "") {
+      print("We're returning the version");
+      return currentVersion;
+    }
+    print("We're getting the version from db/api");
     final version = dDragonStorage.getItem(versionsKey);
-    print(version);
     if(version == null) {
       final versionAPI = await DDragonAPI().getVersionsFromApi();
-      print(versionAPI);
-      return versionAPI[0];
+      currentVersion = versionAPI[0];
+      print("Set version to $currentVersion");
+      return currentVersion;
     }
-    return version[0];
+    currentVersion = version[0];
+    print("Set version to $currentVersion");
+    return currentVersion;
   }
 
   /// Champions
@@ -45,6 +55,7 @@ class DDragonStorage {
   }
 
   Future<Champions> getChampionsFromDb() async {
+    print("getChampionsFromDb");
     final championsString = dDragonStorage.getItem(championsKey);
     if(championsString == null)
       return await DDragonAPI().getChampionsFromApi();

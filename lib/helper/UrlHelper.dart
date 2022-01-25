@@ -1,12 +1,14 @@
-
 import 'package:dart_lol/ddragon_api.dart';
+import 'package:dart_lol/ddragon_storage.dart';
 
 class UrlHelper {
   final DDRAGON_BASE = "https://ddragon.leagueoflegends.com/";
 
+  //var dDragonStorage = DDragonStorage();
+
   Future<String> getRiotGamesAPIVersion() async {
-    final versionList = await DDragonAPI().getVersionsFromApi();
-    return versionList[0];
+    final versionList = DDragonStorage().getVersionFromDb();
+    return versionList;
     //return "12.2.1";
   }
 
