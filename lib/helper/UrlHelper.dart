@@ -1,5 +1,6 @@
 import 'package:dart_lol/ddragon_api.dart';
 import 'package:dart_lol/ddragon_storage.dart';
+import 'package:get_it/get_it.dart';
 
 class UrlHelper {
   final DDRAGON_BASE = "https://ddragon.leagueoflegends.com/";
@@ -7,7 +8,8 @@ class UrlHelper {
   //var dDragonStorage = DDragonStorage();
 
   Future<String> getRiotGamesAPIVersion() async {
-    final versionList = DDragonStorage().getVersionFromDb();
+    var dDragonStorage = GetIt.instance<DDragonStorage>();
+    final versionList = dDragonStorage.getVersionFromDb();
     return versionList;
     //return "12.2.1";
   }

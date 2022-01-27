@@ -5,17 +5,23 @@ import 'package:dart_lol/LeagueStuff/responses/league_response.dart';
 import 'package:dart_lol/dart_lol_db.dart';
 import 'package:dart_lol/LeagueStuff/match.dart';
 import 'package:dart_lol/rate_limiter.dart';
+import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'LeagueStuff/champion_mastery.dart';
 import 'LeagueStuff/game_stats.dart';
 import 'LeagueStuff/rank.dart';
 import 'LeagueStuff/summoner.dart';
+import 'ddragon_storage.dart';
+import 'helper/UrlHelper.dart';
 import 'helper/logging.dart';
 import 'lol_storage.dart';
 
 enum APIType { summoner, matchOverviews, match }
 
 class LeagueAPI extends RateLimiter {
+  // This is our global ServiceLocator
+  GetIt getIt = GetIt.instance;
+
   /// Local storage so we can save match histories
   final storage = LolStorage();
 
@@ -39,6 +45,10 @@ class LeagueAPI extends RateLimiter {
   /// * https://developer.riotgames.com/
   ///
   /// e.g. "EUW1" for Europe West or "NA1" for North America.
+  ///
+  DDragonStorage dDragonStorage = DDragonStorage();
+  UrlHelper urlHelper = UrlHelper();
+
   LeagueAPI(
       {required this.apiToken,
       required String server,
@@ -50,6 +60,9 @@ class LeagueAPI extends RateLimiter {
     //custom rate limit stuff
     this.appMaxCallsPerSecond = appLowerLimitCount;
     this.appMaxCallsPerTwoMinutes = appUpperLimitCount;
+
+    getIt.registerSingleton<UrlHelper>(urlHelper);
+    getIt.registerSingleton<DDragonStorage>(dDragonStorage);
   }
 
   /// Get an Future instance of the Summoner() class.
