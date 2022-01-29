@@ -38,7 +38,6 @@ class LeagueDB extends LeagueAPI {
       {bool fallbackAPI = true}) async {
     final valueMap = storage.getMatch("$matchId");
     if (valueMap.isNotEmpty) {
-      print("Match received from database");
       final that = Match.fromJson(valueMap);
       return returnLeagueResponse(match: that);
     } else if (fallbackAPI == false)
@@ -56,7 +55,6 @@ class LeagueDB extends LeagueAPI {
       int start = 0,
       int count = 100,
       bool fallBackAPI = true}) async {
-    print("Getting matches from DB");
     final list = storage.getMatchHistories(puuid);
     if (fallBackAPI && list.isEmpty) {
       return getMatches(puuid, start: start, count: count);

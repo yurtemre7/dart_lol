@@ -26,19 +26,15 @@ class DDragonStorage {
 
   Future<String> getVersionFromDb() async {
     if(currentVersion != "") {
-      print("We're returning the version");
       return currentVersion;
     }
-    print("We're getting the version from db/api");
     final version = dDragonStorage.getItem(versionsKey);
     if(version == null) {
       final versionAPI = await DDragonAPI().getVersionsFromApi();
       currentVersion = versionAPI[0];
-      print("Set version to $currentVersion");
       return currentVersion;
     }
     currentVersion = version[0];
-    print("Set version to $currentVersion");
     return currentVersion;
   }
 
@@ -55,7 +51,6 @@ class DDragonStorage {
   }
 
   Future<Champions> getChampionsFromDb() async {
-    print("getChampionsFromDb");
     final championsString = dDragonStorage.getItem(championsKey);
     if(championsString == null)
       return await DDragonAPI().getChampionsFromApi();

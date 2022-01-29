@@ -100,13 +100,34 @@ class LeagueAPI extends RateLimiter {
     final list = json.decode(response.body) as List<dynamic>;
     storage.saveMatchHistories(puuid, response.body);
 
-    /// Build list of Strings because it's a <dyanmic>[]
+    /// Build list of Strings
     final returnList = <String>[];
     list.forEach((element) {
       returnList.add(element as String);
     });
     returnList.sort();
 
+    return returnList;
+  }
+
+  /// Get all matches, find the end
+  Future<List<String>> getAllMatches(String puuid) async {
+    final returnList = <String>[];
+    var keepSearching = true;
+    var start = 0;
+    final count = 100;
+    while (keepSearching) {
+      var matches = await getMatches(puuid, start: start, count: count);
+      print("${matches.length} new matches");
+      returnList.addAll(matches);
+      if(matches.length < 100) {
+        keepSearching = false;
+      }else {
+        start += 100;
+        await Future.delayed(const Duration(seconds: 1), (){});
+      }
+    }
+    print("${returnList.length} total matches");
     return returnList;
   }
 

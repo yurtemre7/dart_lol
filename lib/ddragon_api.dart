@@ -12,7 +12,6 @@ class DDragonAPI {
   Future<List<String>> getVersionsFromApi() async {
     var urlHelper = GetIt.instance<UrlHelper>();
     var url = urlHelper.returnVersionsUrl();
-    print("versions url: $url");
     final response = await http.get(Uri.parse(url));
     List<String> stringList = (json.decode(response.body) as List<dynamic>).cast<String>();
     var dDragonStorage = GetIt.instance<DDragonStorage>();
@@ -24,7 +23,6 @@ class DDragonAPI {
   Future<Champions> getChampionsFromApi() async {
     var urlHelper = GetIt.instance<UrlHelper>();
     final url = await urlHelper.buildChampions();
-    print("champions url: $url");
     final response = await http.get(Uri.parse(url));
     final list = json.decode(response.body);
     var dDragonStorage = GetIt.instance<DDragonStorage>();

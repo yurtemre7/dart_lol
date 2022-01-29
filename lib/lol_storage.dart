@@ -15,7 +15,6 @@ class LolStorage {
   }
 
   Map<String, dynamic> getMatch(String matchId) {
-    print("Getting match $matchId from database");
     final matchString = matchStorage.getItem("$matchId");
     if(matchString == null)
       return {};
@@ -23,7 +22,6 @@ class LolStorage {
   }
 
   saveMatch(String matchId, String matchJson) {
-    print("Saving match $matchId to database");
     matchStorage.setItem(matchId, matchJson);
   }
 
@@ -40,10 +38,8 @@ class LolStorage {
   /// 4. Save Set to local storage
   saveMatchHistories(String puuid, String myJson) {
     final oldMatches = getMatchHistories(puuid);
-    print("${oldMatches.length} old matches");
     final newMatches = json.decode(myJson);
     print("${newMatches.length} new matches");
-    print(newMatches.toString());
     /// Prevent duplicates
     Set<String> matchesSet = {};
     oldMatches.forEach((element) {
