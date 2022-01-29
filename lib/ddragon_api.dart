@@ -29,4 +29,5 @@ class DDragonAPI {
     dDragonStorage.saveChampions(response.body);
     return Champions.fromJson(list);
   }
+
 }

@@ -63,6 +63,7 @@ class LeagueAPI extends RateLimiter {
 
     getIt.registerSingleton<UrlHelper>(urlHelper);
     getIt.registerSingleton<DDragonStorage>(dDragonStorage);
+    urlHelper.apiKey = this.apiToken;
   }
 
   /// Get an Future instance of the Summoner() class.
@@ -107,6 +108,7 @@ class LeagueAPI extends RateLimiter {
     });
     returnList.sort();
 
+    print("returning ${returnList.length} matches");
     return returnList;
   }
 
