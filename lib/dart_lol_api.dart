@@ -93,36 +93,38 @@ class LeagueAPI extends RateLimiter {
   /// ```
   /// method to get their champion name, level and if chest aquired.
   /// https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/8da3a1nbj_aeMjIW59139Hx545oBL9kcuQtvkrWImpXJD6IQD_UQ9xejArpgzfQxcxD4LMnwVtD-3g/ids?start=0&count=20
-  Future<List<String>> getMatches(String puuid,
+  Future<LeagueResponse> getMatches(String puuid,
       {int start = 0, int count = 100}) async {
     var url =
         'https://$matchServer.api.riotgames.com/lol/match/v5/matches/by-puuid/$puuid/ids?start=$start&count=$count&api_key=$apiToken';
-    var response = await http.get(Uri.parse(url));
-    final list = json.decode(response.body) as List<dynamic>;
-    storage.saveMatchHistories(puuid, response.body);
 
+    final response = await makeApiCall(url, APIType.matchOverviews);
+    final list = response.matchOverviews;
+    storage.saveMatchHistories(puuid, json.encode(response.matchOverviews));
     /// Build list of Strings
     final returnList = <String>[];
-    list.forEach((element) {
+    list?.forEach((element) {
       returnList.add(element as String);
     });
     returnList.sort();
-
     print("returning ${returnList.length} matches");
-    return returnList;
+    response.matchOverviews = returnList;
+    return response;
   }
 
   /// Get all matches, find the end
-  Future<List<String>> getAllMatches(String puuid) async {
-    final returnList = <String>[];
+  Future<LeagueResponse> getAllMatches(String puuid) async {
+    List<String> returnList = List<String>();
+    //final returnList = <String>[];
     var keepSearching = true;
     var start = 0;
     final count = 100;
+    LeagueResponse response = LeagueResponse();
     while (keepSearching) {
-      var matches = await getMatches(puuid, start: start, count: count);
-      print("${matches.length} new matches");
-      returnList.addAll(matches);
-      if(matches.length < 100) {
+      response = await getMatches(puuid, start: start, count: count);
+      print("${response.matchOverviews?.length} new matches");
+      returnList.addAll(response?.matchOverviews);
+      if(response.matchOverviews?.length < 100) {
         keepSearching = false;
       }else {
         start += 100;
@@ -130,7 +132,7 @@ class LeagueAPI extends RateLimiter {
       }
     }
     print("${returnList.length} total matches");
-    return returnList;
+    return response;
   }
 
   Future<LeagueResponse> makeApiCall(String url, APIType apiType) async {

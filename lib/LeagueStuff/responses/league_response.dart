@@ -9,7 +9,7 @@ class LeagueResponse {
   final double? headerCurrentRateLimitPercentage;
 
   final Summoner? summoner;
-  final List<dynamic>? matchOverviews;
+  List<String>? matchOverviews;
   final Match? match;
 
   LeagueResponse({
