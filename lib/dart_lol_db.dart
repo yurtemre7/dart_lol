@@ -50,14 +50,14 @@ class LeagueDB extends LeagueAPI {
     }
   }
 
-  Future<List<String>> getMatchesFromDb(String puuid,
+  Future<LeagueResponse> getMatchesFromDb(String puuid,
       {bool allMatches = true,
       int start = 0,
       int count = 100,
       bool fallBackAPI = true}) async {
     final list = storage.getMatchHistories(puuid);
     if (fallBackAPI && list.isEmpty) {
-      return getMatches(puuid, start: start, count: count);
+      return await getMatches(puuid, start: start, count: count);
     }
     if (allMatches) {
       final returnList = <String>[];
@@ -65,13 +65,13 @@ class LeagueDB extends LeagueAPI {
         returnList.add(element as String);
       });
       returnList.sort();
-      return returnList;
+      return LeagueResponse(matchOverviews: returnList);
     }
       final returnList = <String>[];
       for (int i = start; i < count; i++) {
         returnList.add(list[i]);
       }
       returnList.sort();
-      return returnList;
+      return LeagueResponse(matchOverviews: returnList);
     }
 }

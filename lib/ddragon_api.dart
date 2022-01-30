@@ -1,7 +1,7 @@
 import 'package:dart_lol/ddragon_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
-import 'package:dart_lol/helper/UrlHelper.dart';
+import 'package:dart_lol/helper/url_helper.dart';
 import 'dart:convert';
 
 import 'LeagueStuff/champions.dart';

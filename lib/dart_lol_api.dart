@@ -12,7 +12,7 @@ import 'LeagueStuff/game_stats.dart';
 import 'LeagueStuff/rank.dart';
 import 'LeagueStuff/summoner.dart';
 import 'ddragon_storage.dart';
-import 'helper/UrlHelper.dart';
+import 'helper/url_helper.dart';
 import 'helper/logging.dart';
 import 'lol_storage.dart';
 
@@ -77,10 +77,13 @@ class LeagueAPI extends RateLimiter {
   Future<LeagueResponse> getSummonerInfo(String summonerName) async {
     var url =
         'https://$server.api.riotgames.com/lol/summoner/v4/summoners/by-name/$summonerName?api_key=$apiToken';
+    print("Before making the api call");
     var response = await makeApiCall(url, APIType.summoner);
-    if (response.summoner != null)
+    print("After making the api call");
+    if (response.summoner != null) {
       storage.saveSummoner(
           summonerName, response.summoner!.toJson().toString());
+    }
     return response;
   }
 
@@ -100,6 +103,7 @@ class LeagueAPI extends RateLimiter {
 
     final response = await makeApiCall(url, APIType.matchOverviews);
     final list = response.matchOverviews;
+    print("we have the list");
     storage.saveMatchHistories(puuid, json.encode(response.matchOverviews));
     /// Build list of Strings
     final returnList = <String>[];
@@ -114,8 +118,7 @@ class LeagueAPI extends RateLimiter {
 
   /// Get all matches, find the end
   Future<LeagueResponse> getAllMatches(String puuid) async {
-    List<String> returnList = List<String>();
-    //final returnList = <String>[];
+    final returnList = <String>[];
     var keepSearching = true;
     var start = 0;
     final count = 100;
@@ -123,8 +126,11 @@ class LeagueAPI extends RateLimiter {
     while (keepSearching) {
       response = await getMatches(puuid, start: start, count: count);
       print("${response.matchOverviews?.length} new matches");
-      returnList.addAll(response?.matchOverviews);
-      if(response.matchOverviews?.length < 100) {
+      response.matchOverviews?.forEach((element) {
+        returnList.add(element);
+      });
+      final lengthOfMatchOverviews = response.matchOverviews?.length??0;
+      if(lengthOfMatchOverviews < 100) {
         keepSearching = false;
       }else {
         start += 100;
@@ -144,8 +150,10 @@ class LeagueAPI extends RateLimiter {
 
     apiCalls.add(now);
     print("url: $url");
-    var response = await http.get(Uri.parse(url));
+    var response = await http.get(Uri.parse(url),);
+    print("After response");
     final headers = response.headers;
+    print("After headers");
     updateHeaders(headers);
     print(response.body);
     if (response.statusCode == 200) {
@@ -157,8 +165,12 @@ class LeagueAPI extends RateLimiter {
           }
         case APIType.matchOverviews:
           {
-            final list = json.decode(response.body);
-            return returnLeagueResponse(matchOverviews: list);
+            final list = json.decode(response.body) as List<dynamic>;
+            final returnList = <String>[];
+            list.forEach((element) {
+              returnList.add(element);
+            });
+            return returnLeagueResponse(matchOverviews: returnList);
           }
         case APIType.match:
           {

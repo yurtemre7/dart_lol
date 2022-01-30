@@ -8,8 +8,6 @@ class UrlHelper {
   final DDRAGON_BASE = "https://ddragon.leagueoflegends.com/";
   var apiKey = "";
 
-  //var dDragonStorage = DDragonStorage();
-
   //return "12.2.1";
   Future<String> getRiotGamesAPIVersion() async {
     var dDragonStorage = GetIt.instance<DDragonStorage>();
