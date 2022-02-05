@@ -26,7 +26,7 @@ class LeagueDB extends LeagueAPI {
       final newS = Summoner.fromJson(s);
       return s;
     } else if (fallbackAPI)
-      return getSummonerInfo(name);
+      return getSummonerFromAPI(name);
     else
       return null;
   }
@@ -57,7 +57,7 @@ class LeagueDB extends LeagueAPI {
       bool fallBackAPI = true}) async {
     final list = storage.getMatchHistories(puuid);
     if (fallBackAPI && list.isEmpty) {
-      return await getMatches(puuid, start: start, count: count);
+      return await getMatchesFromAPI(puuid, start: start, count: count);
     }
     if (allMatches) {
       final returnList = <String>[];

@@ -6,7 +6,7 @@ var emre = 'buff yi rep mid';
 main() async {
   final league = LeagueDB(apiToken: key, server: 'euw1');
   // print(league.server);
-  var summonerInfo = await league.getSummonerInfo(summonerName: emre);
+  var summonerInfo = await league.getSummonerFromAPI(summonerName: emre);
 
   print(summonerInfo.lastTimeOnline);
   assert(summonerInfo.lastTimeOnline! > 0);

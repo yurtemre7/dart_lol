@@ -74,12 +74,10 @@ class LeagueAPI extends RateLimiter {
   /// }
   /// ```
   /// method to get their name, account id, level and revision date.
-  Future<LeagueResponse> getSummonerInfo(String summonerName) async {
+  Future<LeagueResponse> getSummonerFromAPI(String summonerName) async {
     var url =
         'https://$server.api.riotgames.com/lol/summoner/v4/summoners/by-name/$summonerName?api_key=$apiToken';
-    print("Before making the api call");
     var response = await makeApiCall(url, APIType.summoner);
-    print("After making the api call");
     if (response.summoner != null) {
       storage.saveSummoner(
           summonerName, response.summoner!.toJson().toString());
@@ -96,14 +94,13 @@ class LeagueAPI extends RateLimiter {
   /// ```
   /// method to get their champion name, level and if chest aquired.
   /// https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/8da3a1nbj_aeMjIW59139Hx545oBL9kcuQtvkrWImpXJD6IQD_UQ9xejArpgzfQxcxD4LMnwVtD-3g/ids?start=0&count=20
-  Future<LeagueResponse> getMatches(String puuid,
+  Future<LeagueResponse> getMatchesFromAPI(String puuid,
       {int start = 0, int count = 100}) async {
     var url =
         'https://$matchServer.api.riotgames.com/lol/match/v5/matches/by-puuid/$puuid/ids?start=$start&count=$count&api_key=$apiToken';
 
     final response = await makeApiCall(url, APIType.matchOverviews);
     final list = response.matchOverviews;
-    print("we have the list");
     storage.saveMatchHistories(puuid, json.encode(response.matchOverviews));
     /// Build list of Strings
     final returnList = <String>[];
@@ -117,14 +114,14 @@ class LeagueAPI extends RateLimiter {
   }
 
   /// Get all matches, find the end
-  Future<LeagueResponse> getAllMatches(String puuid) async {
+  Future<LeagueResponse> getAllMatchesFromAPI(String puuid) async {
     final returnList = <String>[];
     var keepSearching = true;
     var start = 0;
     final count = 100;
     LeagueResponse response = LeagueResponse();
     while (keepSearching) {
-      response = await getMatches(puuid, start: start, count: count);
+      response = await getMatchesFromAPI(puuid, start: start, count: count);
       print("${response.matchOverviews?.length} new matches");
       response.matchOverviews?.forEach((element) {
         returnList.add(element);
@@ -151,11 +148,8 @@ class LeagueAPI extends RateLimiter {
     apiCalls.add(now);
     print("url: $url");
     var response = await http.get(Uri.parse(url),);
-    print("After response");
     final headers = response.headers;
-    print("After headers");
     updateHeaders(headers);
-    print(response.body);
     if (response.statusCode == 200) {
       switch (apiType) {
         case APIType.summoner:
@@ -200,7 +194,7 @@ class LeagueAPI extends RateLimiter {
   /// }
   /// ```
   /// method to get their champion name, level and if chest aquired.
-  Future<List<ChampionMastery>?> getChampionMasteries(
+  Future<List<ChampionMastery>?> getChampionMasteriesFromAPI(
       {String? summonerID}) async {
     var url =
         'https://$server.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/$summonerID?api_key=$apiToken';
@@ -225,7 +219,7 @@ class LeagueAPI extends RateLimiter {
     return champMasteriesList;
   }
 
-  Future<Rank> getRankInfos({String? summonerID}) async {
+  Future<Rank> getRankInfoFromAPI({String? summonerID}) async {
     var url =
         'https://$server.api.riotgames.com/lol/league/v4/entries/by-summoner/$summonerID?api_key=$apiToken';
     var response = await http.get(
@@ -249,7 +243,7 @@ class LeagueAPI extends RateLimiter {
     }
   }
 
-  Future<GameStat?> getCurrentGame(
+  Future<GameStat?> getCurrentGameFromAPI(
       {String? summonerID, String? summonerName}) async {
     var url =
         'https://$server.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/$summonerID?api_key=$apiToken';
