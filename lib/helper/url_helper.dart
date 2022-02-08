@@ -57,6 +57,10 @@ class UrlHelper {
     return "league/v4/challengerleagues/by-queue/RANKED_SOLO_5x5?api_key=$apiKey";
   }
 
+  String buildGrandmasterLeagueByQueue(String queue) {
+    return "league/v4/grandmasterleagues/by-queue/RANKED_SOLO_5x5?api_key=$apiKey";
+  }
+
   //https://na1.api.riotgames.com/lol/league/v4/entries/by-summoner/p0AX3fC5pERFzCffvHAUwGU72cLtauy1-jcktSdTCyUpMI4
   String buildLeague(String id) {
     return "league/v4/entries/by-summoner/$id?api_key=$apiKey";

@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:dart_lol/LeagueStuff/league_entry_dto.dart';
 import 'package:dart_lol/LeagueStuff/responses/league_response.dart';
 import 'package:dart_lol/dart_lol_db.dart';
 import 'package:dart_lol/LeagueStuff/match.dart';
@@ -98,7 +99,6 @@ class LeagueAPI extends RateLimiter {
       {int start = 0, int count = 100}) async {
     var url =
         'https://$matchServer.api.riotgames.com/lol/match/v5/matches/by-puuid/$puuid/ids?start=$start&count=$count&api_key=$apiToken';
-
     final response = await makeApiCall(url, APIType.matchOverviews);
     final list = response.matchOverviews;
     storage.saveMatchHistories(puuid, json.encode(response.matchOverviews));
@@ -258,6 +258,16 @@ class LeagueAPI extends RateLimiter {
         summonerName,
         summonerID,
       );
+    }
+    return null;
+  }
+
+  Future<List<LeagueEntryDto?>?> getChallengerLeagueFromAPI() async {
+    var url = 'https://$server.api.riotgames.com/lol/league-exp/v4/entries/RANKED_SOLO_5x5/GRANDMASTER/I?page=1&api_key=$apiToken';
+    var response = await http.get(Uri.parse(url));
+    if (response.statusCode != 404) {
+      print(response.body);
+      return leagueEntryDtoFromJson((response.body));
     }
     return null;
   }
