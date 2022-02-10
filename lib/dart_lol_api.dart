@@ -262,11 +262,12 @@ class LeagueAPI extends RateLimiter {
     return null;
   }
 
-  Future<List<LeagueEntryDto?>?> getRankedQueueFromAPI(String queue, String tier, String division) async {
-    var url = 'https://$server.api.riotgames.com/lol/league-exp/v4/entries/RANKED_SOLO_5x5/GRANDMASTER/I?page=1&api_key=$apiToken';
+  Future<List<LeagueEntryDto?>?> getRankedQueueFromAPI(String queue, String tier, String division, {int page = 1}) async {
+    var url = 'https://$server.api.riotgames.com/lol/league-exp/v4/entries/$queue/$tier/$division?page=$page&api_key=$apiToken';
     var response = await http.get(Uri.parse(url));
     if (response.statusCode != 404) {
       print(response.body);
+      storage.saveChallenger(division, page, response.body);
       return leagueEntryDtoFromJson((response.body));
     }
     return null;

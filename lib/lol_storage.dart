@@ -1,10 +1,35 @@
 import 'dart:convert';
+import 'package:dart_lol/LeagueStuff/league_entry_dto.dart';
 import 'package:localstorage/localstorage.dart';
 
 class LolStorage {
   final summonerStorage = new LocalStorage('summoners');
   final matchHistoryStorage = new LocalStorage('match_histories');
   final matchStorage = new LocalStorage('matches');
+
+  final rankedChallengerSoloStorage = new LocalStorage('ranked_challenger_solo');
+
+  saveChallenger(String division, int page, String challengerJson) {
+    rankedChallengerSoloStorage.setItem("$division-$page", challengerJson);
+  }
+
+  List<LeagueEntryDto> getChallengerPlayers(String division) {
+    bool keepSearching = true;
+    int pageNumber = 1;
+    List<LeagueEntryDto> list = [];
+    while(keepSearching) {
+      final newPlayers = rankedChallengerSoloStorage.getItem("$division-$pageNumber");
+
+      if (newPlayers == null) {
+        keepSearching = false;
+      }else {
+        final myLeagueEntryForThisPage = leagueEntryDtoFromJson(newPlayers);
+        list.addAll(myLeagueEntryForThisPage);
+        pageNumber++;
+      }
+    }
+    return list;
+  }
 
   Map<String, dynamic> getSummoner(String summonerName) {
     return json.decode(summonerStorage.getItem(summonerName));
