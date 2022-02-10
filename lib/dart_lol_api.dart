@@ -262,7 +262,7 @@ class LeagueAPI extends RateLimiter {
     return null;
   }
 
-  Future<List<LeagueEntryDto?>?> getChallengerLeagueFromAPI() async {
+  Future<List<LeagueEntryDto?>?> getRankedQueueFromAPI(String queue, String tier, String division) async {
     var url = 'https://$server.api.riotgames.com/lol/league-exp/v4/entries/RANKED_SOLO_5x5/GRANDMASTER/I?page=1&api_key=$apiToken';
     var response = await http.get(Uri.parse(url));
     if (response.statusCode != 404) {
@@ -270,5 +270,86 @@ class LeagueAPI extends RateLimiter {
       return leagueEntryDtoFromJson((response.body));
     }
     return null;
+  }
+}
+
+enum Queue {
+  RANKED_SOLO_5X5,
+  RANKED_FLEX_SR
+}
+
+enum Tier {
+  CHALLENGER,
+  GRANDMASTER,
+  MASTER,
+  DIAMOND,
+  PLATINUM,
+  GOLD,
+  SILVER,
+  BRONZE,
+  IRON
+}
+
+enum Division {
+  I,
+  II,
+  III,
+  IV
+}
+
+class DivisionsHelper {
+  static String getValue(Division division) {
+    switch(division) {
+      case Division.I:
+        return "I";
+      case Division.II:
+        return "II";
+      case Division.III:
+        return "III";
+      case Division.IV:
+        return "IV";
+      default:
+        return "I";
+    }
+  }
+}
+
+class QueuesHelper {
+  static String getValue(Queue queues) {
+    switch(queues) {
+      case Queue.RANKED_SOLO_5X5:
+        return "RANKED_SOLO_5x5";
+      case Queue.RANKED_FLEX_SR:
+        return "RANKED_FLEX_SR";
+      default:
+        return "RANKED_SOLO_5x5";
+    }
+  }
+}
+
+class TiersHelper {
+  static String getValue(Tier tiers) {
+    switch(tiers) {
+      case Tier.CHALLENGER:
+        return "CHALLENGER";
+      case Tier.GRANDMASTER:
+        return "GRANDMASTER";
+      case Tier.MASTER:
+        return "MASTER";
+      case Tier.DIAMOND:
+        return "DIAMOND";
+      case Tier.PLATINUM:
+        return "PLATINUM";
+      case Tier.GOLD:
+        return "GOLD";
+      case Tier.SILVER:
+        return "SILVER";
+      case Tier.BRONZE:
+        return "BRONZE";
+      case Tier.IRON:
+        return "IRON";
+      default:
+        return "CHALLENGER";
+    }
   }
 }
