@@ -77,3 +77,4 @@ build/
 pubspec.lock
 lib/game.json
 lib/game.ts
+coverage/lcov.info
