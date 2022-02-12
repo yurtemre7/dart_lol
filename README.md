@@ -15,43 +15,32 @@ First you have to assign a ApiToken given by LoLApi (You need to wait approximat
 ## Examples
 
 ```dart
-final league = League(apiToken: apiToken, server: "EUW1");
+final league = LeagueDB(apiToken: key, server: 'euw1');
 ```
 
 and furthermore
 
 ```dart
-var player = await league.getSummonerInfo(summonerName: 'buff yi rep mid');
-print(player.level);
-```
-
-A bigger example to how to use my League package (maybe you can see how it actually appeals with the flutter-ish style :D)
-
-```dart
-var player = await league.getSummonerInfo(summonerName: emre);
-
-var gameStat = await league.getGameHistory(accountID: player.accID);
-
-print(gameStat[1].championName);
-// Always outputs your stats for any game in the List of GameStat
-
-var game2 = await gameStat[2].stats();
-
-print(game2.participants[1].summonerName);
-// Outputs the second summoners name of the third game
-var rankInfo = await league.getRankInfos(summonerID: game2.participants[6].summonerID);
-// Outputs the sixth summoners current league points and his current tier
-print(rankInfo.leaguePoints);
-print(rankInfo.tier);
+var response = await league.getSummonerFromAPI(summonerName);
+var summoner = response.summoner!;
+print('Your name: ${summoner.name!}');
+print('Your level ${summoner.summonerLevel!}');
 ```
 
 For more examples, head over to this file on my github: [test.dart](https://github.com/yurtemre7/dart_lol/blob/master/test/tests.dart)
 
 ## Thanks
 
+### Big thanks to:
+- [SeaRoth](https://github.com/SeaRoth)
+- [akadateppei](https://github.com/akadateppei)
+
+---
+
 If you like my repo and want to help me or whatever, please contact me via Telegram:
 
 Telegram: [emredev](https://t.me/emredev)
 
 Thank you very much! Special thanks to you, Flutter!
+
 Danke an alle, dass ihr hier seid!
