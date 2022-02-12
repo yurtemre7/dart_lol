@@ -10,8 +10,13 @@ class ChampionMastery {
   /// A ChampionMastery() instance to use to create a
   /// custom ChampionMastery or use it with the League()
   /// instance to get real-time Mastery information.
-  ChampionMastery(
-      {this.championID, this.championLevel, this.championPoints, this.chestGranted, this.championName});
+  ChampionMastery({
+    this.championID,
+    this.championLevel,
+    this.championPoints,
+    this.chestGranted,
+    this.championName,
+  });
 
   factory ChampionMastery.fromJson(Map<String, dynamic> json) {
     return ChampionMastery(

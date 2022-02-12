@@ -1,23 +1,43 @@
-import 'package:dart_lol/dart_lol.dart';
+import 'package:dart_lol/dart_lol_db.dart';
 import 'package:dart_lol/key.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 var emre = 'teemo ist op';
 
 main() async {
-  final league = League(apiToken: key, server: 'euw1');
-  // print(league.server);
-  var summonerInfo = await league.getSummonerInfo(summonerName: emre);
+  test('summoner test', () async {
+    final league = LeagueDB(apiToken: key, server: 'euw1');
+    // print(league.server);
+    var response = await league.getSummonerFromAPI(emre);
+    var summoner = response.summoner;
+    expect(summoner, isNotNull);
+    summoner = summoner!;
 
-  DateTime lastOnline = summonerInfo.lastTimeOnline!;
-  print(lastOnline);
-  print(summonerInfo.summonerName);
-  // Outputs "teemo ist op"
-  print(summonerInfo.level);
-  // Outputs current summoner level
+    var lastTimeOnline = summoner.revisionDate;
+    lastTimeOnline = lastTimeOnline!;
+    var onlineDate = DateTime.fromMillisecondsSinceEpoch(lastTimeOnline);
+    print('Last time online: ' + onlineDate.toString());
+    print('Your name: ${summoner.name}');
+    print('Your level ${summoner.summonerLevel}');
 
-  // etc.
-  var games =
-      await league.getGameHistory2(puuid: summonerInfo.puuid!, summonerName: summonerInfo.summonerName!);
-  var game1Stats = await games![0].stats();
-  // print(game1Stats);
+    String puuid = summoner.puuid!;
+    var games = await league.getMatchesFromAPI(puuid, count: 1);
+    expect(games.matchOverviews, isNotNull);
+    expect(games.matchOverviews!, isNotEmpty);
+    String matchId = (games.matchOverviews?.first)!;
+
+    var game = await league.getMatch(matchId);
+    expect(game.match, isNotNull);
+  });
+
+  test('summoner currently in game test', () async {
+    final league = LeagueDB(apiToken: key, server: 'euw1');
+    var response = await league.getSummonerFromAPI(emre);
+    var summoner = response.summoner;
+    expect(summoner, isNotNull);
+    summoner = summoner!;
+    response = await league.getCurrentGame(summoner);
+    print(response.responseCode);
+    expect(response.match, isNull);
+  });
 }
