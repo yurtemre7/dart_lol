@@ -314,6 +314,8 @@ class SortByHelper {
         return "WINS";
       case SortBy.LOSSES:
         return "LOSSES";
+      case SortBy.NAME:
+        return "NAME";
       default:
         return "LP";
     }
