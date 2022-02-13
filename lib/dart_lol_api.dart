@@ -302,6 +302,7 @@ enum SortBy {
   LP,
   WINS,
   LOSSES,
+  NAME
 }
 
 class SortByHelper {
