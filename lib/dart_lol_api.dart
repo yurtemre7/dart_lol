@@ -298,6 +298,27 @@ enum Division {
   IV
 }
 
+enum SortBy {
+  LP,
+  WINS,
+  LOSSES,
+}
+
+class SortByHelper {
+  static String getValue(SortBy sortBy) {
+    switch(sortBy) {
+      case SortBy.LP:
+        return "LP";
+      case SortBy.WINS:
+        return "WINS";
+      case SortBy.LOSSES:
+        return "LOSSES";
+      default:
+        return "LP";
+    }
+  }
+}
+
 class DivisionsHelper {
   static String getValue(Division division) {
     switch(division) {
