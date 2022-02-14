@@ -7,12 +7,12 @@ import '../ddragon_storage.dart';
 class UrlHelper {
   final DDRAGON_BASE = "https://ddragon.leagueoflegends.com/";
   var apiKey = "";
+  var currentVersion = "";
 
   //return "12.2.1";
-  Future<String> getRiotGamesAPIVersion() async {
+  void getRiotGamesAPIVersion() async {
     var dDragonStorage = GetIt.instance<DDragonStorage>();
-    final versionList = dDragonStorage.getVersionFromDb();
-    return versionList;
+    currentVersion = await dDragonStorage.getVersionFromDb();
   }
 
   //https://ddragon.leagueoflegends.com/api/versions.json
@@ -21,25 +21,21 @@ class UrlHelper {
   }
 
   //http://ddragon.leagueoflegends.com/cdn/9.11.1/data/en_US/champion.json
-  Future<String> buildChampions() async {
-    final v = await getRiotGamesAPIVersion();
-    return "${DDRAGON_BASE}cdn/$v/data/en_US/champion.json";
+  String buildChampions() {
+    return "${DDRAGON_BASE}cdn/$currentVersion/data/en_US/champion.json";
   }
 
-  Future<String> buildChampionImage(String imageEnding) async {
-    final v = await getRiotGamesAPIVersion();
-    return "${DDRAGON_BASE}cdn/$v/img/champion/${imageEnding}";
+  String buildChampionImage(String imageEnding) {
+    return "${DDRAGON_BASE}cdn/$currentVersion/img/champion/${imageEnding}";
   }
 
   /// Profile Icon
-  Future<String> buildProfileIcon(int iconId) async {
-    final v = await getRiotGamesAPIVersion();
-    return "${DDRAGON_BASE}/cdn/$v/img/profileicon/$iconId.png";
+  String buildProfileIcon(int iconId) {
+    return "${DDRAGON_BASE}/cdn/$currentVersion/img/profileicon/$iconId.png";
   }
 
-  Future<String> buildItemImage(String full) async {
-    final v = await getRiotGamesAPIVersion();
-    return "${DDRAGON_BASE}cdn/$v/img/item/$full";
+  String buildItemImage(String full) {
+    return "${DDRAGON_BASE}cdn/$currentVersion/img/item/$full";
   }
 
   //https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Fizz_1.jpg

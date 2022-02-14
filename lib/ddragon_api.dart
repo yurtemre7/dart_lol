@@ -22,7 +22,7 @@ class DDragonAPI {
   //https://ddragon.leagueoflegends.com/cdn/12.2.1/data/en_US/champion.json
   Future<Champions> getChampionsFromApi() async {
     var urlHelper = GetIt.instance<UrlHelper>();
-    final url = await urlHelper.buildChampions();
+    final url = urlHelper.buildChampions();
     final response = await http.get(Uri.parse(url));
     final list = json.decode(response.body);
     var dDragonStorage = GetIt.instance<DDragonStorage>();

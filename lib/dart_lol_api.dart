@@ -62,8 +62,12 @@ class LeagueAPI extends RateLimiter {
     this.appMaxCallsPerSecond = appLowerLimitCount;
     this.appMaxCallsPerTwoMinutes = appUpperLimitCount;
 
+
+
     getIt.registerSingleton<UrlHelper>(urlHelper);
     getIt.registerSingleton<DDragonStorage>(dDragonStorage);
+
+    urlHelper.getRiotGamesAPIVersion();
     urlHelper.apiKey = this.apiToken;
   }
 
