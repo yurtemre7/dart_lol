@@ -62,11 +62,9 @@ class LeagueAPI extends RateLimiter {
     this.appMaxCallsPerSecond = appLowerLimitCount;
     this.appMaxCallsPerTwoMinutes = appUpperLimitCount;
 
-
-
+    ///GetIt Stuff
     getIt.registerSingleton<UrlHelper>(urlHelper);
     getIt.registerSingleton<DDragonStorage>(dDragonStorage);
-
     urlHelper.getRiotGamesAPIVersion();
     urlHelper.apiKey = this.apiToken;
   }
@@ -83,10 +81,6 @@ class LeagueAPI extends RateLimiter {
     var url =
         'https://$server.api.riotgames.com/lol/summoner/v4/summoners/by-name/$summonerName?api_key=$apiToken';
     var response = await makeApiCall(url, APIType.summoner);
-    if (response.summoner != null) {
-      storage.saveSummoner(
-          summonerName, response.summoner!.toJson().toString());
-    }
     return response;
   }
 
@@ -159,6 +153,7 @@ class LeagueAPI extends RateLimiter {
         case APIType.summoner:
           {
             final s = Summoner.fromJson(json.decode(response.body));
+            storage.saveSummoner(s.name??"", response.body);
             return returnLeagueResponse(summoner: s);
           }
         case APIType.matchOverviews:

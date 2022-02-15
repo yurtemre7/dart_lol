@@ -19,16 +19,17 @@ class LeagueDB extends LeagueAPI {
 
   /// Get summoner from database
   /// If fallbackAPI == true then if not found then will call RIOT API
-  Future<LeagueResponse?> getSummonerFromDb(
-      String name, bool fallbackAPI) async {
-    final s = storage.summonerStorage.getItem("$name");
+  Future<LeagueResponse?> getSummonerFromDb(String name, bool fallbackAPI) async {
+    final s = await storage.summonerStorage.getItem("$name");
     if (s != null) {
       final newS = Summoner.fromJson(s);
       return s;
-    } else if (fallbackAPI)
+    } else if (fallbackAPI) {
       return getSummonerFromAPI(name);
-    else
+    }
+    else {
       return null;
+    }
   }
 
   /// https://americas.api.riotgames.com/lol/match/v5/matches/NA1_4056249988?api_key=RGAPI-8567f359-587c-4742-a791-7fd5748be91a
