@@ -47,7 +47,7 @@ class LeagueAPI extends RateLimiter {
   ///
   /// e.g. "EUW1" for Europe West or "NA1" for North America.
   ///
-  DDragonStorage dDragonStorage = DDragonStorage();
+
   UrlHelper urlHelper = UrlHelper();
 
   LeagueAPI(
@@ -64,7 +64,7 @@ class LeagueAPI extends RateLimiter {
 
     ///GetIt Stuff
     getIt.registerSingleton<UrlHelper>(urlHelper);
-    getIt.registerSingleton<DDragonStorage>(dDragonStorage);
+
     urlHelper.getRiotGamesAPIVersion();
     urlHelper.apiKey = this.apiToken;
   }
@@ -153,7 +153,7 @@ class LeagueAPI extends RateLimiter {
         case APIType.summoner:
           {
             final s = Summoner.fromJson(json.decode(response.body));
-            storage.saveSummoner(s.name??"", response.body);
+            await storage.saveSummoner(s.name??"", response.body);
             return returnLeagueResponse(summoner: s);
           }
         case APIType.matchOverviews:
@@ -168,7 +168,7 @@ class LeagueAPI extends RateLimiter {
         case APIType.match:
           {
             final match = Match.fromJson(json.decode(response.body));
-            storage.saveMatch(match.metadata!.matchId!, response.body);
+            await storage.saveMatch(match.metadata!.matchId!, response.body);
             return returnLeagueResponse(match: match);
           }
       }

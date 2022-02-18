@@ -9,9 +9,15 @@ class UrlHelper {
   var apiKey = "";
   var currentVersion = "";
 
+  GetIt getIt = GetIt.instance;
+  DDragonStorage dDragonStorage = DDragonStorage();
+
+  UrlHelper() {
+    getIt.registerSingleton<DDragonStorage>(dDragonStorage);
+  }
+
   //return "12.2.1";
   void getRiotGamesAPIVersion() async {
-    var dDragonStorage = GetIt.instance<DDragonStorage>();
     currentVersion = await dDragonStorage.getVersionFromDb();
   }
 
@@ -26,7 +32,7 @@ class UrlHelper {
   }
 
   String buildChampionImage(String imageEnding) {
-    return "${DDRAGON_BASE}cdn/$currentVersion/img/champion/${imageEnding}";
+    return "${DDRAGON_BASE}cdn/$currentVersion/img/champion/$imageEnding";
   }
 
   /// Profile Icon

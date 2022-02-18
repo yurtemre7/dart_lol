@@ -20,12 +20,14 @@ class LeagueDB extends LeagueAPI {
   /// Get summoner from database
   /// If fallbackAPI == true then if not found then will call RIOT API
   Future<LeagueResponse?> getSummonerFromDb(String name, bool fallbackAPI) async {
-    final s = await storage.summonerStorage.getItem("$name");
+    final s = storage.getSummoner("$name");
     if (s != null) {
+      print("summoner not equal to null");
       final newS = Summoner.fromJson(s);
-      return s;
+      return returnLeagueResponse(summoner: newS);
     } else if (fallbackAPI) {
-      return getSummonerFromAPI(name);
+      print("falling back to the api");
+      return await getSummonerFromAPI(name);
     }
     else {
       return null;

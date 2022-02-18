@@ -6,29 +6,26 @@ import 'LeagueStuff/champions.dart';
 import 'ddragon_api.dart';
 
 class DDragonStorage {
-  final dDragonStorage = new LocalStorage('ddragon_storage');
+  final dDragonLocalStorage = new LocalStorage('ddragon_storage');
   final versionsKey = "ddragon_versions";
   final versionsLastSaved = "versions_last_saved";
-
-  //final dDragonApi = DDragonAPI();
-
   var currentVersion = "";
 
   /// VERSIONS
-  saveVersions(List<String> versions) {
-    dDragonStorage.setItem(versionsKey, versions);
-    dDragonStorage.setItem(versionsLastSaved, DateTime.now().millisecondsSinceEpoch);
+  Future saveVersions(List<String> versions) async {
+    await dDragonLocalStorage.setItem(versionsKey, versions);
+    await dDragonLocalStorage.setItem(versionsLastSaved, DateTime.now().millisecondsSinceEpoch);
   }
 
-  int getVersionsLastUpdated() {
-    return dDragonStorage.getItem(versionsLastSaved);
+  Future<int> getVersionsLastUpdated() async {
+    return await dDragonLocalStorage.getItem(versionsLastSaved);
   }
 
   Future<String> getVersionFromDb() async {
     if(currentVersion != "") {
       return currentVersion;
     }
-    final version = dDragonStorage.getItem(versionsKey);
+    final version = await dDragonLocalStorage.getItem(versionsKey);
     if(version == null) {
       final versionAPI = await DDragonAPI().getVersionsFromApi();
       currentVersion = versionAPI[0];
@@ -42,16 +39,16 @@ class DDragonStorage {
   final championsKey = "champions_key";
   final championsLastSaved = "champions_last_saved";
   saveChampions(String champions) {
-    dDragonStorage.setItem(championsKey, champions);
-    dDragonStorage.setItem(championsLastSaved, DateTime.now().millisecondsSinceEpoch);
+    dDragonLocalStorage.setItem(championsKey, champions);
+    dDragonLocalStorage.setItem(championsLastSaved, DateTime.now().millisecondsSinceEpoch);
   }
 
   int getChampionsLastUpdated() {
-    return dDragonStorage.getItem(championsLastSaved);
+    return dDragonLocalStorage.getItem(championsLastSaved);
   }
 
   Future<Champions> getChampionsFromDb() async {
-    final championsString = dDragonStorage.getItem(championsKey);
+    final championsString = await dDragonLocalStorage.getItem(championsKey);
     if(championsString == null)
       return await DDragonAPI().getChampionsFromApi();
     return Champions.fromJson(json.decode(championsString));
