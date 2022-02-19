@@ -2,23 +2,46 @@ import 'dart:convert';
 import 'package:dart_lol/LeagueStuff/league_entry_dto.dart';
 import 'package:localstorage/localstorage.dart';
 
+import 'dart_lol_api.dart';
+
 class LolStorage {
   final _summonerStorage = new LocalStorage('summoners_storage');
   final _matchHistoryStorage = new LocalStorage('match_histories');
   final _matchStorage = new LocalStorage('matches');
 
   final _rankedChallengerSoloStorage = new LocalStorage('ranked_challenger_solo');
+  final _rankedGrandmasterSoloStorage = new LocalStorage('ranked_grandmaster_solo');
+  final _rankedMasterSoloStorage = new LocalStorage('ranked_master_solo');
+  final _rankedDiamondSoloStorage = new LocalStorage('ranked_diamond_solo');
+  final _rankedPlatinumSoloStorage = new LocalStorage('ranked_platinum_solo');
+  final _rankedGoldSoloStorage = new LocalStorage('ranked_gold_solo');
+  final _rankedSilverSoloStorage = new LocalStorage('ranked_silver_solo');
+  final _rankedBronzeSoloStorage = new LocalStorage('ranked_bronze_solo');
+  final _rankedIronSoloStorage = new LocalStorage('ranked_iron_solo');
 
-  Future saveChallenger(String division, int page, String challengerJson) async {
-    await _rankedChallengerSoloStorage.setItem("$division-$page", challengerJson);
+  Future saveRankedPlayers(String tier, String division, int page, String challengerJson) async {
+    if(tier == TiersHelper.getValue(Tier.CHALLENGER)) {
+      await _rankedChallengerSoloStorage.setItem("$division-$page", challengerJson);
+    }
   }
 
-  List<LeagueEntryDto> getChallengerPlayers(String division) {
+  List<LeagueEntryDto> getRankedPlayers(String tier, String division) {
+    LocalStorage myStorage;
+    if(tier == TiersHelper.getValue(Tier.CHALLENGER)) {
+      myStorage = _rankedChallengerSoloStorage;
+    }else {
+      myStorage = _rankedChallengerSoloStorage;
+    }
+
     bool keepSearching = true;
     int pageNumber = 1;
     List<LeagueEntryDto> list = [];
+    final newPlayers = myStorage.getItem("$division-$pageNumber");
+    if(newPlayers == null) {
+      return list;
+    }
     while(keepSearching) {
-      final newPlayers = _rankedChallengerSoloStorage.getItem("$division-$pageNumber");
+      final newPlayers = myStorage.getItem("$division-$pageNumber");
 
       if (newPlayers == null) {
         keepSearching = false;
@@ -30,6 +53,8 @@ class LolStorage {
     }
     return list;
   }
+
+
 
   Map<String, dynamic>? getSummoner(String summonerName) {
     final that = _summonerStorage.getItem("$summonerName");

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dart_lol/ddragon_api.dart';
 import 'package:dart_lol/ddragon_storage.dart';
 import 'package:get_it/get_it.dart';
@@ -32,6 +34,8 @@ class UrlHelper {
   }
 
   String buildChampionImage(String imageEnding) {
+    while(currentVersion == "")
+      sleep(const Duration(milliseconds: 400));
     return "${DDRAGON_BASE}cdn/$currentVersion/img/champion/$imageEnding";
   }
 

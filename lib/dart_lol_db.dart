@@ -3,6 +3,7 @@ library dart_lol;
 import 'package:dart_lol/LeagueStuff/responses/league_response.dart';
 import 'package:dart_lol/dart_lol_api.dart';
 import 'package:dart_lol/LeagueStuff/match.dart';
+import 'LeagueStuff/league_entry_dto.dart';
 import 'LeagueStuff/summoner.dart';
 
 class LeagueDB extends LeagueAPI {
@@ -22,11 +23,9 @@ class LeagueDB extends LeagueAPI {
   Future<LeagueResponse?> getSummonerFromDb(String name, bool fallbackAPI) async {
     final s = storage.getSummoner("$name");
     if (s != null) {
-      print("summoner not equal to null");
       final newS = Summoner.fromJson(s);
       return returnLeagueResponse(summoner: newS);
     } else if (fallbackAPI) {
-      print("falling back to the api");
       return await getSummonerFromAPI(name);
     }
     else {
@@ -77,4 +76,14 @@ class LeagueDB extends LeagueAPI {
       returnList.sort();
       return LeagueResponse(matchOverviews: returnList);
     }
+
+  // Future<List<LeagueEntryDto?>?> getRankedQueueFromDb(String queue, String tier, String division, {int page = 1, bool fallbackAPI = true}) async {
+  //   storage.getRankedPlayers(tier, division)
+  //   if (response.statusCode != 404) {
+  //     print(response.body);
+  //     storage.saveChallenger(division, page, response.body);
+  //     return leagueEntryDtoFromJson((response.body));
+  //   }
+  //   return null;
+  // }
 }

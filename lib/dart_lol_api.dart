@@ -246,6 +246,7 @@ class LeagueAPI extends RateLimiter {
       {String? summonerID, String? summonerName}) async {
     var url =
         'https://$server.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/$summonerID?api_key=$apiToken';
+    print("URL : $url");
     var response = await http.get(
       Uri.parse(url),
     );
@@ -263,10 +264,11 @@ class LeagueAPI extends RateLimiter {
 
   Future<List<LeagueEntryDto?>?> getRankedQueueFromAPI(String queue, String tier, String division, {int page = 1}) async {
     var url = 'https://$server.api.riotgames.com/lol/league-exp/v4/entries/$queue/$tier/$division?page=$page&api_key=$apiToken';
+    print("URL : $url");
     var response = await http.get(Uri.parse(url));
     if (response.statusCode != 404) {
       print(response.body);
-      storage.saveChallenger(division, page, response.body);
+      storage.saveRankedPlayers(tier, division, page, response.body);
       return leagueEntryDtoFromJson((response.body));
     }
     return null;
