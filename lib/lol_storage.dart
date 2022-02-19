@@ -32,7 +32,6 @@ class LolStorage {
     }else {
       myStorage = _rankedChallengerSoloStorage;
     }
-
     bool keepSearching = true;
     int pageNumber = 1;
     List<LeagueEntryDto> list = [];

@@ -77,13 +77,12 @@ class LeagueDB extends LeagueAPI {
       return LeagueResponse(matchOverviews: returnList);
     }
 
-  // Future<List<LeagueEntryDto?>?> getRankedQueueFromDb(String queue, String tier, String division, {int page = 1, bool fallbackAPI = true}) async {
-  //   storage.getRankedPlayers(tier, division)
-  //   if (response.statusCode != 404) {
-  //     print(response.body);
-  //     storage.saveChallenger(division, page, response.body);
-  //     return leagueEntryDtoFromJson((response.body));
-  //   }
-  //   return null;
-  // }
+  Future<List<LeagueEntryDto>> getRankedQueueFromDb(String queue, String tier, String division, {int page = 1, bool fallbackAPI = true}) async {
+    final ranks = storage.getRankedPlayers(tier, division);
+    if (ranks.isEmpty && fallbackAPI == true) {
+      return await getRankedQueueFromAPI(queue, tier, division);
+    }else {
+      return ranks;
+    }
+  }
 }

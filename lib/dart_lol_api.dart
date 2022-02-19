@@ -262,7 +262,7 @@ class LeagueAPI extends RateLimiter {
     return null;
   }
 
-  Future<List<LeagueEntryDto?>?> getRankedQueueFromAPI(String queue, String tier, String division, {int page = 1}) async {
+  Future<List<LeagueEntryDto>> getRankedQueueFromAPI(String queue, String tier, String division, {int page = 1}) async {
     var url = 'https://$server.api.riotgames.com/lol/league-exp/v4/entries/$queue/$tier/$division?page=$page&api_key=$apiToken';
     print("URL : $url");
     var response = await http.get(Uri.parse(url));
@@ -271,7 +271,7 @@ class LeagueAPI extends RateLimiter {
       storage.saveRankedPlayers(tier, division, page, response.body);
       return leagueEntryDtoFromJson((response.body));
     }
-    return null;
+    return <LeagueEntryDto>[];
   }
 }
 
