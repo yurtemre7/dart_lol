@@ -1,4 +1,5 @@
 import 'package:dart_lol/LeagueStuff/responses/league_response.dart';
+import 'package:dio/dio.dart';
 import 'LeagueStuff/summoner.dart';
 import 'package:dart_lol/LeagueStuff/match.dart';
 
@@ -51,46 +52,52 @@ class RateLimiter {
     return true;
   }
 
-  void updateHeaders(Map<String, String> headers) {
+  void updateHeaders(Headers headers) {
     print(headers.toString());
-    try {
-      //allowed max
-      //
-      final rateLimit = headers["x-app-rate-limit"];
-      final rateLimitSplit = rateLimit?.split(",");
-      //lower max
-      final lowerLimitSplit = rateLimitSplit?[0].split(":");
-      final maybeTwenty = lowerLimitSplit?[0];
-      final lowerMaxCalls = int.parse(maybeTwenty.toString());
-      final maybeOneSecond = lowerLimitSplit?[1];
-      final lowerMaxSeconds = int.parse(maybeOneSecond.toString());
-      //upper max
-      final upperLimitSplit = rateLimitSplit?[1].split(":");
-      final maybeOneHundred = upperLimitSplit?[0];
-      final upperMaxCalls = int.parse(maybeOneHundred.toString());
-      final maybeOneTwenty = upperLimitSplit?[1];
-      final upperMaxSeconds = int.parse(maybeOneTwenty.toString());
-      //current max
-      //
-      final rateLimitCount = headers["x-app-rate-limit-count"];
-      final rateLimitCountSplit = rateLimitCount?.split(",");
-      //lower max current
-      final lowerCountSplit = rateLimitCountSplit?[0].split(":");
-      final maybeOne = lowerCountSplit?[0];
-      final lowerCount = int.parse(maybeOne.toString());
-      //upper max current
-      final upperCountSplit = rateLimitCountSplit?[1].split(":");
-      final maybeOneAgain = upperCountSplit?[0];
-      final upperCount = int.parse(maybeOneAgain.toString());
-
-      print("lower: $lowerCount/$lowerMaxCalls every $lowerMaxSeconds second");
-      print("upper: $upperCount/$upperMaxCalls every $upperMaxSeconds seconds");
-      appLowerCurrent = lowerCount;
-      appUpperCurrent = upperCount;
-      lastCheckedHeaders = DateTime.now().millisecondsSinceEpoch;
-    } catch(e) {
-      print("Caught Exception parsing riot headers: ${e.toString()} ");
-    }
+    headers.forEach((name, values) {
+      values.forEach((element) {
+        print("$name - $element");
+      });
+      print("");
+    });
+    // try {
+    //   //allowed max
+    //   //
+    //   final rateLimit = headers["x-app-rate-limit"];
+    //   final rateLimitSplit = rateLimit?.split(",");
+    //   //lower max
+    //   final lowerLimitSplit = rateLimitSplit?[0].split(":");
+    //   final maybeTwenty = lowerLimitSplit?[0];
+    //   final lowerMaxCalls = int.parse(maybeTwenty.toString());
+    //   final maybeOneSecond = lowerLimitSplit?[1];
+    //   final lowerMaxSeconds = int.parse(maybeOneSecond.toString());
+    //   //upper max
+    //   final upperLimitSplit = rateLimitSplit?[1].split(":");
+    //   final maybeOneHundred = upperLimitSplit?[0];
+    //   final upperMaxCalls = int.parse(maybeOneHundred.toString());
+    //   final maybeOneTwenty = upperLimitSplit?[1];
+    //   final upperMaxSeconds = int.parse(maybeOneTwenty.toString());
+    //   //current max
+    //   //
+    //   final rateLimitCount = headers["x-app-rate-limit-count"];
+    //   final rateLimitCountSplit = rateLimitCount?.split(",");
+    //   //lower max current
+    //   final lowerCountSplit = rateLimitCountSplit?[0].split(":");
+    //   final maybeOne = lowerCountSplit?[0];
+    //   final lowerCount = int.parse(maybeOne.toString());
+    //   //upper max current
+    //   final upperCountSplit = rateLimitCountSplit?[1].split(":");
+    //   final maybeOneAgain = upperCountSplit?[0];
+    //   final upperCount = int.parse(maybeOneAgain.toString());
+    //
+    //   print("lower: $lowerCount/$lowerMaxCalls every $lowerMaxSeconds second");
+    //   print("upper: $upperCount/$upperMaxCalls every $upperMaxSeconds seconds");
+    //   appLowerCurrent = lowerCount;
+    //   appUpperCurrent = upperCount;
+    //   lastCheckedHeaders = DateTime.now().millisecondsSinceEpoch;
+    // } catch(e) {
+    //   print("Caught Exception parsing riot headers: ${e.toString()} ");
+    // }
   }
 
   bool passesApiCallsRateLimit(int now) {

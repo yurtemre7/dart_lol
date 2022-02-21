@@ -1,6 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
-
+import 'package:dio/dio.dart';
 import 'package:dart_lol/LeagueStuff/league_entry_dto.dart';
 import 'package:dart_lol/LeagueStuff/responses/league_response.dart';
 import 'package:dart_lol/dart_lol_db.dart';
@@ -145,43 +145,57 @@ class LeagueAPI extends RateLimiter {
 
     apiCalls.add(now);
     print("url: $url");
-    var response = await http.get(Uri.parse(url),);
-    final headers = response.headers;
-    updateHeaders(headers);
-    if (response.statusCode == 200) {
-      switch (apiType) {
-        case APIType.summoner:
-          {
-            final s = Summoner.fromJson(json.decode(response.body));
-            await storage.saveSummoner(s.name??"", response.body);
-            return returnLeagueResponse(summoner: s);
-          }
-        case APIType.matchOverviews:
-          {
-            final list = json.decode(response.body) as List<dynamic>;
-            final returnList = <String>[];
-            list.forEach((element) {
-              returnList.add(element);
-            });
-            return returnLeagueResponse(matchOverviews: returnList);
-          }
-        case APIType.match:
-          {
-            final match = Match.fromJson(json.decode(response.body));
-            await storage.saveMatch(match.metadata!.matchId!, response.body);
-            return returnLeagueResponse(match: match);
-          }
-      }
-    } else if (response.statusCode == 429) {
-      print("We received a 429");
-      final tempRetryHeader = headers["retry-after"];
-      final secondsToWait = int.parse(tempRetryHeader!);
-      final msToWait = secondsToWait * 1000;
-      final retryTimeStamp = msToWait + now;
-      return returnLeagueResponse(
-          responseCode: response.statusCode, retryTimestamp: retryTimeStamp);
-    } else {
-      return returnLeagueResponse(responseCode: response.statusCode);
+    print("before get");
+    //var response = await http.get(Uri.parse(url),);
+
+    try {
+      var response = await Dio().get(url);
+      print(response);
+
+      print("After get");
+      final headers = response.headers;
+      updateHeaders(headers);
+      print("After headers");
+      return returnLeagueResponse();
+      // if (response.statusCode == 200) {
+      //   switch (apiType) {
+      //     case APIType.summoner:
+      //       {
+      //         final s = Summoner.fromJson(json.decode(response.body));
+      //         await storage.saveSummoner(s.name??"", response.body);
+      //         return returnLeagueResponse(summoner: s);
+      //       }
+      //     case APIType.matchOverviews:
+      //       {
+      //         final list = json.decode(response.body) as List<dynamic>;
+      //         final returnList = <String>[];
+      //         list.forEach((element) {
+      //           returnList.add(element);
+      //         });
+      //         return returnLeagueResponse(matchOverviews: returnList);
+      //       }
+      //     case APIType.match:
+      //       {
+      //         final match = Match.fromJson(json.decode(response.body));
+      //         await storage.saveMatch(match.metadata!.matchId!, response.body);
+      //         return returnLeagueResponse(match: match);
+      //       }
+      //   }
+      // } else if (response.statusCode == 429) {
+      //   print("We received a 429");
+      //   final tempRetryHeader = headers["retry-after"];
+      //   final secondsToWait = int.parse(tempRetryHeader!);
+      //   final msToWait = secondsToWait * 1000;
+      //   final retryTimeStamp = msToWait + now;
+      //   return returnLeagueResponse(
+      //       responseCode: response.statusCode, retryTimestamp: retryTimeStamp);
+      // } else {
+      //   return returnLeagueResponse(responseCode: response.statusCode);
+      // }
+
+    } catch (e) {
+      print(e);
+      return returnLeagueResponse(responseCode: 010);
     }
   }
 
