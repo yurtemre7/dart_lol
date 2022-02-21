@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:html';
 import 'package:dart_lol/LeagueStuff/league_entry_dto.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -10,14 +11,14 @@ class LolStorage {
   final _matchStorage = new LocalStorage('matches');
 
   final _rankedChallengerSoloStorage = new LocalStorage('ranked_challenger_solo');
-  final _rankedGrandmasterSoloStorage = new LocalStorage('ranked_grandmaster_solo');
-  final _rankedMasterSoloStorage = new LocalStorage('ranked_master_solo');
-  final _rankedDiamondSoloStorage = new LocalStorage('ranked_diamond_solo');
-  final _rankedPlatinumSoloStorage = new LocalStorage('ranked_platinum_solo');
-  final _rankedGoldSoloStorage = new LocalStorage('ranked_gold_solo');
-  final _rankedSilverSoloStorage = new LocalStorage('ranked_silver_solo');
-  final _rankedBronzeSoloStorage = new LocalStorage('ranked_bronze_solo');
-  final _rankedIronSoloStorage = new LocalStorage('ranked_iron_solo');
+  // final _rankedGrandmasterSoloStorage = new LocalStorage('ranked_grandmaster_solo');
+  // final _rankedMasterSoloStorage = new LocalStorage('ranked_master_solo');
+  // final _rankedDiamondSoloStorage = new LocalStorage('ranked_diamond_solo');
+  // final _rankedPlatinumSoloStorage = new LocalStorage('ranked_platinum_solo');
+  // final _rankedGoldSoloStorage = new LocalStorage('ranked_gold_solo');
+  // final _rankedSilverSoloStorage = new LocalStorage('ranked_silver_solo');
+  // final _rankedBronzeSoloStorage = new LocalStorage('ranked_bronze_solo');
+  // final _rankedIronSoloStorage = new LocalStorage('ranked_iron_solo');
 
   Future saveRankedPlayers(String tier, String division, int page, String challengerJson) async {
     if(tier == TiersHelper.getValue(Tier.CHALLENGER)) {
@@ -75,7 +76,13 @@ class LolStorage {
   }
 
   saveMatch(String matchId, String matchJson) async {
-    await _matchStorage.setItem(matchId, matchJson);
+    try {
+      await _matchStorage.setItem(matchId, matchJson);
+    }on DomException catch (e) {
+      print("we cannot save this match $matchId");
+    }on FormatException catch (e) {
+      print("we cannot save this match $matchId");
+    }
   }
 
   List<dynamic> getMatchHistories(String puuid) {
