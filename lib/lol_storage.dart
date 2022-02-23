@@ -1,8 +1,6 @@
 import 'dart:convert';
-import 'dart:html';
 import 'package:dart_lol/LeagueStuff/league_entry_dto.dart';
 import 'package:localstorage/localstorage.dart';
-
 import 'dart_lol_api.dart';
 
 class LolStorage {
@@ -78,9 +76,13 @@ class LolStorage {
   saveMatch(String matchId, String matchJson) async {
     try {
       await _matchStorage.setItem(matchId, matchJson);
-    }on DomException catch (e) {
-      print("we cannot save this match $matchId");
     }on FormatException catch (e) {
+      print("we cannot save this match $matchId");
+    }on Exception catch (e) {
+      print("we cannot save this match $matchId");
+    }on Error catch (e) {
+      print("we cannot save this match $matchId");
+    }catch (e) {
       print("we cannot save this match $matchId");
     }
   }
