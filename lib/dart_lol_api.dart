@@ -319,7 +319,7 @@ class LeagueAPI extends RateLimiter {
     var url = 'https://$server.api.riotgames.com/lol/league-exp/v4/entries/$queue/$tier/$division?page=$page&api_key=$apiToken';
     print("URL : $url");
     var response = await http.get(Uri.parse(url));
-    if (response.statusCode != 404) {
+    if (response.statusCode == 200) {
       print(response.body);
       storage.saveRankedPlayers(tier, division, page, response.body);
       return leagueEntryDtoFromJson((response.body));
@@ -394,40 +394,66 @@ class DivisionsHelper {
 }
 
 class QueuesHelper {
-  static String getValue(Queue queues) {
-    switch(queues) {
+  static String getValue(Queue queue, {bool returnShortVersion = false}) {
+    switch(queue) {
       case Queue.RANKED_SOLO_5X5:
+        if(returnShortVersion)
+          return "Solo";
         return "RANKED_SOLO_5x5";
       case Queue.RANKED_FLEX_SR:
+        if(returnShortVersion)
+          return "Flex";
         return "RANKED_FLEX_SR";
       default:
+        if(returnShortVersion)
+          return "Solo";
         return "RANKED_SOLO_5x5";
     }
   }
 }
 
 class TiersHelper {
-  static String getValue(Tier tiers) {
-    switch(tiers) {
+  static String getValue(Tier tier, {bool returnShortVersion = false}) {
+    switch(tier) {
       case Tier.CHALLENGER:
+        if(returnShortVersion)
+          return "Challenger";
         return "CHALLENGER";
       case Tier.GRANDMASTER:
+        if(returnShortVersion)
+          return "Grandmaster";
         return "GRANDMASTER";
       case Tier.MASTER:
+        if(returnShortVersion)
+          return "Master";
         return "MASTER";
       case Tier.DIAMOND:
+        if(returnShortVersion)
+          return "Diamond";
         return "DIAMOND";
       case Tier.PLATINUM:
+        if(returnShortVersion)
+          return "Platinum";
         return "PLATINUM";
       case Tier.GOLD:
+        if(returnShortVersion)
+          return "Gold";
         return "GOLD";
       case Tier.SILVER:
+        if(returnShortVersion)
+          return "Silver";
         return "SILVER";
       case Tier.BRONZE:
+        if(returnShortVersion)
+          return "Bronze";
         return "BRONZE";
       case Tier.IRON:
+        if(returnShortVersion)
+          return "Iron";
         return "IRON";
       default:
+        if(returnShortVersion)
+          return "Challenger";
         return "CHALLENGER";
     }
   }
