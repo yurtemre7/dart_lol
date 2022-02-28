@@ -36,6 +36,9 @@ class UrlHelper {
   String buildChampionImage(String imageEnding) {
     while(currentVersion == "")
       sleep(const Duration(milliseconds: 400));
+    if(!imageEnding.contains(".png")) {
+      imageEnding += ".png";
+    }
     return "${DDRAGON_BASE}cdn/$currentVersion/img/champion/$imageEnding";
   }
 
