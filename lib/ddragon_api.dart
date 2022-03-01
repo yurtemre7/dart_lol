@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:dart_lol/helper/url_helper.dart';
 import 'dart:convert';
 
+import 'LeagueStuff/champion_stand_alone.dart';
 import 'LeagueStuff/champions.dart';
 
 class DDragonAPI {
@@ -29,5 +30,17 @@ class DDragonAPI {
     dDragonStorage.saveChampions(response.body);
     return Champions.fromJson(list);
   }
+
+  Future<ChampionStandAlone> getSpecificChampionFromApi(String championName) async {
+    var urlHelper = GetIt.instance<UrlHelper>();
+    final url = urlHelper.buildChampionStandAlone(championName);
+    final response = await http.get(Uri.parse(url));
+    final list = json.decode(response.body);
+    var dDragonStorage = GetIt.instance<DDragonStorage>();
+    dDragonStorage.saveSpecificChampion(response.body, championName);
+    return ChampionStandAlone.fromJson(list, championName);
+  }
+
+
 
 }

@@ -65,8 +65,11 @@ class LeagueAPI extends RateLimiter {
     ///GetIt Stuff
     getIt.registerSingleton<UrlHelper>(urlHelper);
 
-    urlHelper.getRiotGamesAPIVersion();
     urlHelper.apiKey = this.apiToken;
+  }
+
+  Future init() async {
+    urlHelper.dDragonStorage.getVersionFromDb();
   }
 
   /// Get an Future instance of the Summoner() class.

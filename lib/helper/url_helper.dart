@@ -9,7 +9,6 @@ import '../ddragon_storage.dart';
 class UrlHelper {
   final DDRAGON_BASE = "https://ddragon.leagueoflegends.com/";
   var apiKey = "";
-  var currentVersion = "";
 
   GetIt getIt = GetIt.instance;
   DDragonStorage dDragonStorage = DDragonStorage();
@@ -19,8 +18,8 @@ class UrlHelper {
   }
 
   //return "12.2.1";
-  void getRiotGamesAPIVersion() async {
-    currentVersion = await dDragonStorage.getVersionFromDb();
+  String getRiotGamesAPIVersion() {
+    return dDragonStorage.currentVersion;
   }
 
   //https://ddragon.leagueoflegends.com/api/versions.json
@@ -30,25 +29,33 @@ class UrlHelper {
 
   //http://ddragon.leagueoflegends.com/cdn/9.11.1/data/en_US/champion.json
   String buildChampions() {
-    return "${DDRAGON_BASE}cdn/$currentVersion/data/en_US/champion.json";
+    return "${DDRAGON_BASE}cdn/${getRiotGamesAPIVersion()}/data/en_US/champion.json";
+  }
+
+  //http://ddragon.leagueoflegends.com/cdn/12.4.1/data/en_US/champion/Aatrox.json
+  String buildChampionStandAlone(String championName) {
+    return "${DDRAGON_BASE}cdn/${getRiotGamesAPIVersion()}/data/en_US/champion/$championName.json";
+  }
+
+  //https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${controller.matchItem.value.championName}_3.jpg
+  String buildChampionSplashImage(String championName, int number) {
+    return "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championName}_$number.jpg";
   }
 
   String buildChampionImage(String imageEnding) {
-    while(currentVersion == "")
-      sleep(const Duration(milliseconds: 400));
     if(!imageEnding.contains(".png")) {
       imageEnding += ".png";
     }
-    return "${DDRAGON_BASE}cdn/$currentVersion/img/champion/$imageEnding";
+    return "${DDRAGON_BASE}cdn/${getRiotGamesAPIVersion()}/img/champion/$imageEnding";
   }
 
   /// Profile Icon
   String buildProfileIcon(int iconId) {
-    return "${DDRAGON_BASE}/cdn/$currentVersion/img/profileicon/$iconId.png";
+    return "$DDRAGON_BASE/cdn/${getRiotGamesAPIVersion()}/img/profileicon/$iconId.png";
   }
 
   String buildItemImage(String full) {
-    return "${DDRAGON_BASE}cdn/$currentVersion/img/item/$full";
+    return "${DDRAGON_BASE}cdn/${getRiotGamesAPIVersion()}/img/item/$full";
   }
 
   //https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Fizz_1.jpg
