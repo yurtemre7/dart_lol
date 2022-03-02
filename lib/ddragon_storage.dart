@@ -12,10 +12,6 @@ class DDragonStorage {
   final versionsLastSaved = "versions_last_saved";
   var currentVersion = "";
 
-  DDragonStorage() {
-    getVersionFromDb();
-  }
-
   /// VERSIONS
   Future saveVersions(List<String> versions) async {
     await dDragonLocalStorage.setItem(versionsKey, versions);
