@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
+import 'package:dart_lol/LeagueStuff/runes_reforged.dart';
 import 'package:dio/dio.dart';
 import 'package:dart_lol/LeagueStuff/league_entry_dto.dart';
 import 'package:dart_lol/LeagueStuff/responses/league_response.dart';
@@ -38,6 +39,7 @@ class LeagueAPI extends RateLimiter {
 
   /// List contains every champion with their according mastery stat.
   List<ChampionMastery>? champMasteriesList;
+  List<RunesReforged>? runesReforged;
 
   /// Class League() instance to use to get several
   /// information about an player.
@@ -71,7 +73,9 @@ class LeagueAPI extends RateLimiter {
   Future init() async {
     await urlHelper.dDragonStorage.getVersionFromDb();
     await urlHelper.dDragonStorage.getSummonerSpellsFromDb();
-    await urlHelper.dDragonStorage.getRunesFromDb();
+    runesReforged = await urlHelper.dDragonStorage.getRunesFromDb();
+
+    getIt.registerSingleton<List<RunesReforged>>(runesReforged!);
   }
 
   /// Get an Future instance of the Summoner() class.

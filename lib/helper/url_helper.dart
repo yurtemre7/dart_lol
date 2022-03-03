@@ -4,6 +4,7 @@ import 'package:dart_lol/ddragon_api.dart';
 import 'package:dart_lol/ddragon_storage.dart';
 import 'package:get_it/get_it.dart';
 
+import '../LeagueStuff/runes_reforged.dart';
 import '../ddragon_storage.dart';
 
 class UrlHelper {
@@ -78,8 +79,10 @@ class UrlHelper {
     return "${DDRAGON_BASE}cdn/${getRiotGamesAPIVersion()}/data/en_US/runesReforged.json";
   }
 
-  String buildRuneImage(String url) {
-    return "${DDRAGON_BASE}cdn/img/$url";
+  String buildRuneImage(int id) {
+    var runesReforged = GetIt.instance<List<RunesReforged>>();
+    final rune = runesReforged.firstWhere((element) => element.id == id);
+    return "${DDRAGON_BASE}cdn/img/${rune.icon}";
   }
 
   /** na1. api **/
