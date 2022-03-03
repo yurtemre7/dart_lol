@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dart_lol/LeagueStuff/champion_stand_alone.dart';
+import 'package:dart_lol/LeagueStuff/summoner_spells.dart';
 import 'package:localstorage/localstorage.dart';
 
 import 'LeagueStuff/champions.dart';
@@ -79,5 +80,28 @@ class DDragonStorage {
     }
     return championStandAlone;
   }
-/// Champions Specific end
+  /// Champions Specific end
+  final spellKey = "summoner_spells";
+  Future<SummonerSpell> getSummonerSpellsFromDb() async {
+    final spellString = await dDragonLocalStorage.getItem(spellKey);
+    if(spellString == null) {
+      print("summoner spells not in database, getting them from api");
+      return await DDragonAPI().getSummonerSpellsFromApi();
+    }
+    final summonerSpells = SummonerSpell.fromJson(json.decode(spellString));
+    print("comparing version ${summonerSpells.version} vs $currentVersion");
+    if(summonerSpells.version != currentVersion) {
+      print("Summoner spell data out of date, calling API");
+      return await DDragonAPI().getSummonerSpellsFromApi();
+    }
+    return summonerSpells;
+  }
+
+  saveSummonerSpells(String json) {
+    dDragonLocalStorage.setItem(spellKey, json);
+  }
+  ///Get summoner spell stuff
+
+
+
 }

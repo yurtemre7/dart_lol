@@ -63,6 +63,16 @@ class UrlHelper {
     return "${DDRAGON_BASE}cdn/img/champion/splash/${name}_1.jpg";
   }
 
+  //http://ddragon.leagueoflegends.com/cdn/12.5.1/data/en_US/summoner.json
+  String buildSummonerSpellsApiCall() {
+    return "${DDRAGON_BASE}cdn/${getRiotGamesAPIVersion()}/data/en_US/summoner.json";
+  }
+
+  //https://ddragon.leagueoflegends.com/cdn/12.5.1/img/spell/SummonerPoroThrow.png
+  String buildSummonerSpellImage(String key) {
+    return "${DDRAGON_BASE}cdn/${getRiotGamesAPIVersion()}/img/spell/$key";
+  }
+
   String buildRuneImage(String url) {
     return "${DDRAGON_BASE}cdn/img/$url";
   }

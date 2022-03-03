@@ -1,3 +1,4 @@
+import 'package:dart_lol/LeagueStuff/summoner_spells.dart';
 import 'package:dart_lol/ddragon_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
@@ -41,6 +42,15 @@ class DDragonAPI {
     return ChampionStandAlone.fromJson(list, championName);
   }
 
-
-
+  Future<SummonerSpell> getSummonerSpellsFromApi() async {
+    var urlHelper = GetIt.instance<UrlHelper>();
+    final url = urlHelper.buildSummonerSpellsApiCall();
+    final response = await http.get(Uri.parse(url));
+    final newResponse = response.body.replaceAll("null,", "");
+    print(newResponse);
+    final list = json.decode(newResponse);
+    var dDragonStorage = GetIt.instance<DDragonStorage>();
+    dDragonStorage.saveSummonerSpells(newResponse);
+    return SummonerSpell.fromJson(list);
+  }
 }

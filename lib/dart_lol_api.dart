@@ -69,7 +69,8 @@ class LeagueAPI extends RateLimiter {
   }
 
   Future init() async {
-    urlHelper.dDragonStorage.getVersionFromDb();
+    await urlHelper.dDragonStorage.getVersionFromDb();
+    await urlHelper.dDragonStorage.getSummonerSpellsFromDb();
   }
 
   /// Get an Future instance of the Summoner() class.
