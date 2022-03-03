@@ -1,3 +1,4 @@
+import 'package:dart_lol/LeagueStuff/runes_reforged.dart';
 import 'package:dart_lol/LeagueStuff/summoner_spells.dart';
 import 'package:dart_lol/ddragon_storage.dart';
 import 'package:get_it/get_it.dart';
@@ -47,10 +48,21 @@ class DDragonAPI {
     final url = urlHelper.buildSummonerSpellsApiCall();
     final response = await http.get(Uri.parse(url));
     final newResponse = response.body.replaceAll("null,", "");
-    print(newResponse);
     final list = json.decode(newResponse);
     var dDragonStorage = GetIt.instance<DDragonStorage>();
     dDragonStorage.saveSummonerSpells(newResponse);
     return SummonerSpell.fromJson(list);
+  }
+
+  Future<List<RunesReforged>> getRunesFromApi() async {
+    var urlHelper = GetIt.instance<UrlHelper>();
+    final url = urlHelper.buildRunesApiCall();
+    final response = await http.get(Uri.parse(url));
+    final newResponse = response.body.replaceAll("null,", "");
+    print(newResponse);
+    final list = json.decode(newResponse);
+    var dDragonStorage = GetIt.instance<DDragonStorage>();
+    dDragonStorage.saveSummonerSpells(newResponse);
+    return runesReforgedFromJson(newResponse);
   }
 }

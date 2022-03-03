@@ -73,6 +73,11 @@ class UrlHelper {
     return "${DDRAGON_BASE}cdn/${getRiotGamesAPIVersion()}/img/spell/$key";
   }
 
+  //https://ddragon.leagueoflegends.com/cdn/12.5.1/data/en_US/runesReforged.json
+  String buildRunesApiCall() {
+    return "${DDRAGON_BASE}cdn/${getRiotGamesAPIVersion()}/data/en_US/runesReforged.json";
+  }
+
   String buildRuneImage(String url) {
     return "${DDRAGON_BASE}cdn/img/$url";
   }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dart_lol/LeagueStuff/champion_stand_alone.dart';
+import 'package:dart_lol/LeagueStuff/runes_reforged.dart';
 import 'package:dart_lol/LeagueStuff/summoner_spells.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -102,6 +103,30 @@ class DDragonStorage {
   }
   ///Get summoner spell stuff
 
+
+  /// Runes
+  final runeKey = "runes_reforged";
+  final runeKeyDate = "runes_reforged_date";
+  Future<List<RunesReforged>> getRunesFromDb() async {
+    final runesString = await dDragonLocalStorage.getItem(runeKey);
+    if(runesString == null) {
+      print("runes not in database, getting them from api");
+      return await DDragonAPI().getRunesFromApi();
+    }
+    // Check runes version
+    final runesVersion = dDragonLocalStorage.getItem(runeKeyDate);
+    if(runesVersion != currentVersion) {
+      print("Runes version not equal to currentVersion ($runesVersion vs $currentVersion), calling api");
+      return await DDragonAPI().getRunesFromApi();
+    }
+    return runesReforgedFromJson(json.decode(runesString));
+  }
+
+  saveRunesReforged(String json) {
+    dDragonLocalStorage.setItem(runeKey, json);
+    dDragonLocalStorage.setItem(runeKeyDate, currentVersion);
+  }
+  /// Runes
 
 
 }
