@@ -104,7 +104,6 @@ class DDragonStorage {
   }
   ///Get summoner spell stuff
 
-
   /// Runes
   final runeKey = "runes_reforged";
   final runeKeyDate = "runes_reforged_date";
@@ -120,7 +119,7 @@ class DDragonStorage {
       print("Runes version not equal to currentVersion ($runesVersion vs $currentVersion), calling api");
       return await DDragonAPI().getRunesFromApi();
     }
-    return runesReforgedFromJson(json.decode(runesString));
+    return runesReforgedFromJson(runesString);
   }
 
   saveRunesReforged(String json) {
@@ -138,7 +137,7 @@ class DDragonStorage {
     if(currentVersion != queueSavedVersion || queueString == null) {
       return await DDragonAPI().getQueuesFromApi();
     }
-    return queuesFromJson(json.decode(queueString));
+    return queuesFromJson(queueString);
   }
 
   saveQueuesToDb(String json) {
