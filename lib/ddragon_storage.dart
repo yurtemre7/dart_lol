@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dart_lol/LeagueStuff/Queues.dart';
 import 'package:dart_lol/LeagueStuff/champion_stand_alone.dart';
 import 'package:dart_lol/LeagueStuff/runes_reforged.dart';
 import 'package:dart_lol/LeagueStuff/summoner_spells.dart';
@@ -128,5 +129,21 @@ class DDragonStorage {
   }
   /// Runes
 
+  /// Queues
+  final queueKey = "queue_key";
+  final queueVersion = "queue_key_version";
+  Future<List<Queues>> getQueuesFromDb() async {
+    final queueSavedVersion = await dDragonLocalStorage.getItem(queueVersion);
+    final queueString = await dDragonLocalStorage.getItem(queueKey);
+    if(currentVersion != queueSavedVersion || queueString == null) {
+      return await DDragonAPI().getQueuesFromApi();
+    }
+    return queuesFromJson(json.decode(queueString));
+  }
 
+  saveQueuesToDb(String json) {
+    dDragonLocalStorage.setItem(queueKey, json);
+    dDragonLocalStorage.setItem(queueVersion, currentVersion);
+  }
+  /// Queues
 }

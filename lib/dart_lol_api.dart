@@ -10,6 +10,7 @@ import 'package:dart_lol/LeagueStuff/match.dart';
 import 'package:dart_lol/rate_limiter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
+import 'LeagueStuff/Queues.dart';
 import 'LeagueStuff/champion_mastery.dart';
 import 'LeagueStuff/game_stats.dart';
 import 'LeagueStuff/rank.dart';
@@ -42,6 +43,7 @@ class LeagueAPI extends RateLimiter {
   List<ChampionMastery>? champMasteriesList;
   List<RunesReforged>? runesReforged;
   SummonerSpell? summonerSpell;
+  List<Queues>? queues;
 
   /// Class League() instance to use to get several
   /// information about an player.
@@ -76,9 +78,11 @@ class LeagueAPI extends RateLimiter {
     await urlHelper.dDragonStorage.getVersionFromDb();
     summonerSpell = await urlHelper.dDragonStorage.getSummonerSpellsFromDb();
     runesReforged = await urlHelper.dDragonStorage.getRunesFromDb();
+    queues = await urlHelper.dDragonStorage.getQueuesFromDb();
 
     getIt.registerSingleton<SummonerSpell>(summonerSpell!);
     getIt.registerSingleton<List<RunesReforged>>(runesReforged!);
+    getIt.registerSingleton<List<Queues>>(queues!);
   }
 
   /// Get an Future instance of the Summoner() class.

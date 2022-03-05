@@ -1,3 +1,4 @@
+import 'package:dart_lol/LeagueStuff/Queues.dart';
 import 'package:dart_lol/LeagueStuff/runes_reforged.dart';
 import 'package:dart_lol/LeagueStuff/summoner_spells.dart';
 import 'package:dart_lol/ddragon_storage.dart';
@@ -59,10 +60,17 @@ class DDragonAPI {
     final url = urlHelper.buildRunesApiCall();
     final response = await http.get(Uri.parse(url));
     final newResponse = response.body.replaceAll("null,", "");
-    print(newResponse);
-    final list = json.decode(newResponse);
     var dDragonStorage = GetIt.instance<DDragonStorage>();
-    dDragonStorage.saveSummonerSpells(newResponse);
+    dDragonStorage.saveRunesReforged(newResponse);
     return runesReforgedFromJson(newResponse);
+  }
+
+  //https://static.developer.riotgames.com/docs/lol/queues.json
+  Future<List<Queues>> getQueuesFromApi() async {
+    final url = "https://static.developer.riotgames.com/docs/lol/queues.json";
+    final response = await http.get(Uri.parse(url));
+    var dDragonStorage = GetIt.instance<DDragonStorage>();
+    dDragonStorage.saveQueuesToDb(response.body);
+    return queuesFromJson(response.body);
   }
 }
