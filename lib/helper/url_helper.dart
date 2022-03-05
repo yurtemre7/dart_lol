@@ -77,13 +77,11 @@ class UrlHelper {
     var summonerSpells = GetIt.instance<SummonerSpell>();
     var url = "${DDRAGON_BASE}cdn/${getRiotGamesAPIVersion()}/img/spell/SummonerBarrier.png";;
     summonerSpells.data?.forEach((key, value) {
-      print(value.key);
       if("$myKey" == value.key) {
         url = "${DDRAGON_BASE}cdn/${getRiotGamesAPIVersion()}/img/spell/${value.image.full}";
         return;
       }
     });
-    print("URL: $url");
     return url;
   }
 
