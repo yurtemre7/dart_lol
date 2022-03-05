@@ -5,6 +5,7 @@ import 'package:dart_lol/ddragon_storage.dart';
 import 'package:get_it/get_it.dart';
 
 import '../LeagueStuff/runes_reforged.dart';
+import '../LeagueStuff/summoner_spells.dart';
 import '../ddragon_storage.dart';
 
 class UrlHelper {
@@ -56,6 +57,8 @@ class UrlHelper {
   }
 
   String buildItemImage(String full) {
+    if(!full.contains(".png"))
+      full += ".png";
     return "${DDRAGON_BASE}cdn/${getRiotGamesAPIVersion()}/img/item/$full";
   }
 
@@ -70,8 +73,18 @@ class UrlHelper {
   }
 
   //https://ddragon.leagueoflegends.com/cdn/12.5.1/img/spell/SummonerPoroThrow.png
-  String buildSummonerSpellImage(String key) {
-    return "${DDRAGON_BASE}cdn/${getRiotGamesAPIVersion()}/img/spell/$key";
+  String buildSummonerSpellImage(int myKey) {
+    var summonerSpells = GetIt.instance<SummonerSpell>();
+    var url = "${DDRAGON_BASE}cdn/${getRiotGamesAPIVersion()}/img/spell/SummonerBarrier.png";;
+    summonerSpells.data?.forEach((key, value) {
+      print(value.key);
+      if("$myKey" == value.key) {
+        url = "${DDRAGON_BASE}cdn/${getRiotGamesAPIVersion()}/img/spell/${value.image.full}";
+        return;
+      }
+    });
+    print("URL: $url");
+    return url;
   }
 
   //https://ddragon.leagueoflegends.com/cdn/12.5.1/data/en_US/runesReforged.json
