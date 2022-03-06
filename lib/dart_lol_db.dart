@@ -4,6 +4,7 @@ import 'package:dart_lol/LeagueStuff/responses/league_response.dart';
 import 'package:dart_lol/dart_lol_api.dart';
 import 'package:dart_lol/LeagueStuff/match.dart';
 import 'LeagueStuff/league_entry_dto.dart';
+import 'LeagueStuff/rank.dart';
 import 'LeagueStuff/summoner.dart';
 
 class LeagueDB extends LeagueAPI {
@@ -78,11 +79,15 @@ class LeagueDB extends LeagueAPI {
     }
 
   Future<List<LeagueEntryDto>> getRankedQueueFromDb(String queue, String tier, String division, {int page = 1, bool fallbackAPI = true}) async {
-    final ranks = storage.getRankedPlayers(tier, division);
+    final ranks = storage.getChallengerPlayers(tier, division);
     if (ranks.isEmpty && fallbackAPI == true) {
       return await getRankedQueueFromAPI(queue, tier, division);
     }else {
       return ranks;
     }
   }
+
+  /*Future<List<Rank>> getRankedStatsForSummoner(String summonerId) async {
+    final rank = storage.getChallengerPlayers(tier, division)
+  }*/
 }

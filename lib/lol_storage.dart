@@ -24,7 +24,7 @@ class LolStorage {
     }
   }
 
-  List<LeagueEntryDto> getRankedPlayers(String tier, String division) {
+  List<LeagueEntryDto> getChallengerPlayers(String tier, String division) {
     LocalStorage myStorage;
     if(tier == TiersHelper.getValue(Tier.CHALLENGER)) {
       myStorage = _rankedChallengerSoloStorage;
@@ -51,8 +51,6 @@ class LolStorage {
     }
     return list;
   }
-
-
 
   Map<String, dynamic>? getSummoner(String summonerName) {
     final that = _summonerStorage.getItem("$summonerName");
@@ -85,6 +83,11 @@ class LolStorage {
     }catch (e) {
       print("we cannot save this match $matchId");
     }
+  }
+
+  String rankedSummonerKey = 'ranked_summoner_key_';
+  saveRankedSummoner(String summonerId, String json) async {
+    await _summonerStorage.setItem("$rankedSummonerKey$summonerId", json);
   }
 
   List<dynamic> getMatchHistories(String puuid) {

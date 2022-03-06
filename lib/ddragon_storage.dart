@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:dart_lol/LeagueStuff/Queues.dart';
+import 'package:dart_lol/LeagueStuff/queues.dart';
 import 'package:dart_lol/LeagueStuff/champion_stand_alone.dart';
 import 'package:dart_lol/LeagueStuff/runes_reforged.dart';
 import 'package:dart_lol/LeagueStuff/summoner_spells.dart';

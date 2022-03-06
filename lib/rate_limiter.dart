@@ -1,3 +1,4 @@
+import 'package:dart_lol/LeagueStuff/league_entry_dto.dart';
 import 'package:dart_lol/LeagueStuff/responses/league_response.dart';
 import 'package:dio/dio.dart';
 import 'LeagueStuff/responses/league_response.dart';
@@ -24,7 +25,8 @@ class RateLimiter {
     int? retryTimestamp = 0,
     Summoner? summoner,
     List<String>? matchOverviews,
-    Match? match}) {
+    Match? match,
+    LeagueEntryDto? rankedEntryDTO}) {
     return LeagueResponse(
       responseCode: responseCode,
       retryTimestamp: retryTimestamp,
@@ -33,7 +35,8 @@ class RateLimiter {
 
       summoner: summoner,
       matchOverviews: matchOverviews,
-      match: match
+      match: match,
+      leagueEntryDto: rankedEntryDTO
     );
   }
 

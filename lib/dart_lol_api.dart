@@ -10,7 +10,7 @@ import 'package:dart_lol/LeagueStuff/match.dart';
 import 'package:dart_lol/rate_limiter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
-import 'LeagueStuff/Queues.dart';
+import 'LeagueStuff/queues.dart';
 import 'LeagueStuff/champion_mastery.dart';
 import 'LeagueStuff/game_stats.dart';
 import 'LeagueStuff/rank.dart';
@@ -20,7 +20,7 @@ import 'helper/url_helper.dart';
 import 'helper/logging.dart';
 import 'lol_storage.dart';
 
-enum APIType { summoner, matchOverviews, match }
+enum APIType { summoner, matchOverviews, match, rankedSummoner }
 
 class LeagueAPI extends RateLimiter {
   // This is our global ServiceLocator
@@ -161,8 +161,6 @@ class LeagueAPI extends RateLimiter {
 
     apiCalls.add(now);
     print("url: $url");
-    print("before get");
-    //var response = await http.get(Uri.parse(url),);
 
     var response = await http.get(Uri.parse(url),);
     final headers = response.headers;
@@ -190,6 +188,12 @@ class LeagueAPI extends RateLimiter {
             await storage.saveMatch(match.metadata!.matchId!, response.body);
             return returnLeagueResponse(match: match);
           }
+        case APIType.rankedSummoner:
+          {
+            final rankedSummoner = LeagueEntryDto.fromJson(json.decode(response.body));
+            await storage.saveRankedSummoner(rankedSummoner.summonerId??"", response.body);
+            return returnLeagueResponse(rankedEntryDTO: rankedSummoner);
+          }
       }
     } else if (response.statusCode == 429) {
       print("We received a 429");
@@ -202,56 +206,6 @@ class LeagueAPI extends RateLimiter {
     } else {
       return returnLeagueResponse(responseCode: response.statusCode);
     }
-
-    // try {
-    //   //var response = await Dio().get(url);
-    //   var response = await http.get(Uri.parse(url),);
-    //   final headers = response.headers;
-    //   //updateHeaders(headers);
-    //   if (response.statusCode == 200) {
-    //
-    //     final responseString = response.toString();
-    //     switch (apiType) {
-    //       case APIType.summoner:
-    //         {
-    //           final s = Summoner.fromJson(json.decode(responseString));
-    //           await storage.saveSummoner(s.name??"", responseString);
-    //           return returnLeagueResponse(summoner: s);
-    //         }
-    //       case APIType.matchOverviews:
-    //         {
-    //           print(response.data.runtimeType);
-    //           print(response.data.toString());
-    //           final list = json.decode(response.data.toString());
-    //           print(list);
-    //           final returnList = <String>[];
-    //           list.forEach((element) {
-    //             returnList.add(element);
-    //           });
-    //           return returnLeagueResponse(matchOverviews: returnList);
-    //         }
-    //       case APIType.match:
-    //         {
-    //           final match = Match.fromJson(json.decode(responseString));
-    //           await storage.saveMatch(match.metadata!.matchId!, responseString);
-    //           return returnLeagueResponse(match: match);
-    //         }
-    //     }
-    //   } else if (response.statusCode == 429) {
-    //     print("We received a 429");
-    //     // final tempRetryHeader = headers["retry-after"];
-    //     // final secondsToWait = int.parse(tempRetryHeader!);
-    //     // final msToWait = secondsToWait * 1000;
-    //     // final retryTimeStamp = msToWait + now;
-    //     return returnLeagueResponse(responseCode: response.statusCode, retryTimestamp: 0);
-    //   } else {
-    //     return returnLeagueResponse(responseCode: response.statusCode);
-    //   }
-    //
-    // } catch (e) {
-    //   print(e);
-    //   return returnLeagueResponse(responseCode: 010);
-    // }
   }
 
   /// Get an Future instance of the ChampionMasteries class.
@@ -287,28 +241,11 @@ class LeagueAPI extends RateLimiter {
     return champMasteriesList;
   }
 
-  Future<Rank> getRankInfoFromAPI({String? summonerID}) async {
+  Future<LeagueEntryDto?> getRankInfoFromAPI({String? summonerID}) async {
     var url =
         'https://$server.api.riotgames.com/lol/league/v4/entries/by-summoner/$summonerID?api_key=$apiToken';
-    var response = await http.get(
-      Uri.parse(url),
-    );
-    if (response.body.toString() != '[]') {
-      return Rank.fromJson(
-        json.decode(
-          response.body,
-        )[0],
-      );
-    } else {
-      return Rank(
-          hotStreak: false,
-          leagueId: '0',
-          leaguePoints: 0,
-          losses: 0,
-          wins: 0,
-          rank: 'unranked',
-          tier: 'no tier');
-    }
+    final response = await makeApiCall(url, APIType.rankedSummoner);
+    return response.leagueEntryDto;
   }
 
   Future<GameStat?> getCurrentGameFromAPI(

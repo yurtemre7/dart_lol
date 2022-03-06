@@ -1,3 +1,5 @@
+import 'package:dart_lol/LeagueStuff/league_entry_dto.dart';
+
 import '../summoner.dart';
 import 'package:dart_lol/LeagueStuff/match.dart';
 
@@ -11,6 +13,7 @@ class LeagueResponse {
   final Summoner? summoner;
   List<String>? matchOverviews;
   final Match? match;
+  final LeagueEntryDto? leagueEntryDto;
 
   LeagueResponse({
     this.responseCode,
@@ -19,5 +22,6 @@ class LeagueResponse {
     this.headerCurrentRateLimitPercentage,
     this.summoner,
     this.matchOverviews,
-    this.match});
+    this.match,
+    this.leagueEntryDto});
 }

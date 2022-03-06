@@ -1,4 +1,4 @@
-import 'package:dart_lol/LeagueStuff/Queues.dart';
+import 'package:dart_lol/LeagueStuff/queues.dart';
 import 'package:dart_lol/LeagueStuff/runes_reforged.dart';
 import 'package:dart_lol/LeagueStuff/summoner_spells.dart';
 import 'package:dart_lol/ddragon_storage.dart';
