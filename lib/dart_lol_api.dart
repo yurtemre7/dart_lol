@@ -251,7 +251,6 @@ class LeagueAPI extends RateLimiter {
     print("URL : $url");
     var response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
-      print(response.body);
       return leagueEntryDtoFromJson((response.body));
     }
     return <LeagueEntryDto>[];

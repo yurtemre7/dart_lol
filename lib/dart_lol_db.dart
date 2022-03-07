@@ -79,8 +79,12 @@ class LeagueDB extends LeagueAPI {
   /// Match Histories
   Future<LeagueResponse> getMatchHistories(String puuid, {bool allMatches = true, int start = 0, int count = 100, bool fallBackAPI = true}) async {
     final matchHistoryString = _matchHistoryStorage.getItem(puuid);
+    print("Match histories from db:");
+    print(matchHistoryString.toString().length);
     if (fallBackAPI && matchHistoryString.isEmpty) {
       final histories = await getMatchHistoriesFromAPI(puuid, start: start, count: count);
+      print("Match histories from db:");
+      print(histories.matchOverviews?.length);
       saveMatchHistories(puuid, json.encode(histories.matchOverviews));
       return histories;
     }
@@ -106,6 +110,7 @@ class LeagueDB extends LeagueAPI {
   /// 3. Add 1 and 2 to a Set
   /// 4. Save Set to local storage
   saveMatchHistories(String puuid, String myJson) async {
+    print("Saving match histories");
     final oldMatches = await getMatchHistories(puuid, allMatches: true, fallBackAPI: false);
     final newMatches = json.decode(myJson);
     print("${newMatches.length} new matches");
@@ -130,8 +135,10 @@ class LeagueDB extends LeagueAPI {
     int pageNumber = 1;
     List<LeagueEntryDto> list = [];
     final newPlayers = _rankedChallengerSoloStorage.getItem("$division-$pageNumber");
-    if(newPlayers == null) {
-      return list;
+    if(newPlayers == null && fallbackAPI == true) {
+      final rankedPlayed = await getChallengerPlayersFromAPI(queue, tier, division);
+      saveChallengerPlayers(tier, division, json.encode(rankedPlayed));
+      return rankedPlayed;
     }
     while(keepSearching) {
       final newPlayers = _rankedChallengerSoloStorage.getItem("$division-$pageNumber");
@@ -143,16 +150,13 @@ class LeagueDB extends LeagueAPI {
         pageNumber++;
       }
     }
-    ///
-    if (list.isEmpty && fallbackAPI == true) {
-      final rankedPlayed = await getChallengerPlayersFromAPI(queue, tier, division);
-      await _rankedChallengerSoloStorage.setItem("$division-$page", leagueEntryDtoToJson(rankedPlayed));
-      return rankedPlayed;
-    }else {
-      return list;
-    }
+    return list;
   }
-  /// Ranked Queues
+
+  saveChallengerPlayers(String tier, String division, String json) async {
+    await _rankedChallengerSoloStorage.setItem("$tier-$division", json);
+  }
+  /// Challenger Players
 
 
   String rankedSummonerKey = 'ranked_summoner_key_';
