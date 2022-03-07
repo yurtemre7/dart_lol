@@ -47,16 +47,21 @@ class LeagueDB extends LeagueAPI {
   /// Match
   Future<LeagueResponse> getMatch(String matchId, {bool fallbackAPI = true}) async {
     final valueMap = _matchStorage.getItem("$matchId");
-    if (valueMap.isNotEmpty) {
-      final that = Match.fromJson(json.decode(valueMap));
-      return returnLeagueResponse(match: that);
+    print("inside getMatch");
+    print(valueMap);
+    print(valueMap.runtimeType);
+    if (valueMap != null) {
+      final that = json.decode(valueMap);
+      final matchFromJson = Match.fromJson((that));
+      print(matchFromJson.metadata?.matchId);
+      return returnLeagueResponse(match: matchFromJson);
     } else if (fallbackAPI == false)
       return returnLeagueResponse();
     else {
       var url =
           'https://$matchServer.api.riotgames.com/lol/match/v5/matches/$matchId?api_key=$apiToken';
       var match = await makeApiCall(url, APIType.match);
-      await saveMatch(match.match?.metadata!.matchId??"", match.match?.toJson().toString()??"");
+      await saveMatch(match.match?.metadata!.matchId??"", json.encode(match.match?.toJson()));
       return match;
     }
   }
@@ -77,15 +82,17 @@ class LeagueDB extends LeagueAPI {
   /// Match
 
   /// Match Histories
-  Future<LeagueResponse> getMatchHistories(String puuid, {bool allMatches = true, int start = 0, int count = 100, bool fallBackAPI = true}) async {
+  Future<LeagueResponse> getMatchHistories(String puuid, {bool allMatches = true, int start = 0, int count = 100, bool fallBackAPI = true, bool forceApi = false}) async {
     final matchHistoryString = _matchHistoryStorage.getItem(puuid);
     print("Match histories from db:");
-    print(matchHistoryString.toString().length);
-    if (fallBackAPI && matchHistoryString.isEmpty) {
+    if (forceApi || matchHistoryString == null) {
       final histories = await getMatchHistoriesFromAPI(puuid, start: start, count: count);
-      print("Match histories from db:");
-      print(histories.matchOverviews?.length);
-      saveMatchHistories(puuid, json.encode(histories.matchOverviews));
+      if (matchHistoryString != null) {
+        saveMatchHistories(puuid, json.encode(histories.matchOverviews), json.encode(matchHistoryString));
+      }else{
+        saveMatchHistories(puuid, json.encode(histories.matchOverviews), "");
+      }
+      print("Returning from api");
       return histories;
     }
     final list = json.decode(matchHistoryString);
@@ -95,6 +102,7 @@ class LeagueDB extends LeagueAPI {
         returnList.add(element as String);
       });
       returnList.sort();
+      print("Returning all matches");
       return LeagueResponse(matchOverviews: returnList);
     }
       final returnList = <String>[];
@@ -102,6 +110,7 @@ class LeagueDB extends LeagueAPI {
         returnList.add(list[i]);
       }
       returnList.sort();
+      print("Returning at end");
       return LeagueResponse(matchOverviews: returnList);
     }
 
@@ -109,14 +118,18 @@ class LeagueDB extends LeagueAPI {
   /// 2. Convert new match histories
   /// 3. Add 1 and 2 to a Set
   /// 4. Save Set to local storage
-  saveMatchHistories(String puuid, String myJson) async {
+  saveMatchHistories(String puuid, String newJson, String oldJson) async {
     print("Saving match histories");
-    final oldMatches = await getMatchHistories(puuid, allMatches: true, fallBackAPI: false);
-    final newMatches = json.decode(myJson);
+    var oldMatches = [];
+    if(oldJson != "") {
+      oldMatches = json.decode(oldJson);
+    }
+    final newMatches = json.decode(newJson);
+    print("${oldMatches.length} old matches");
     print("${newMatches.length} new matches");
     /// Prevent duplicates
     Set<String> matchesSet = {};
-    oldMatches.matchOverviews?.forEach((element) {
+    oldMatches..forEach((element) {
       matchesSet.add(element);
     });
     newMatches.forEach((element) {

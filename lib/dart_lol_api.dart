@@ -109,29 +109,29 @@ class LeagueAPI extends RateLimiter {
   }
 
   /// Get all matches, find the end
-  Future<LeagueResponse> getAllMatchesFromAPI(String puuid) async {
-    final returnList = <String>[];
-    var keepSearching = true;
-    var start = 0;
-    final count = 100;
-    LeagueResponse response = LeagueResponse();
-    while (keepSearching) {
-      response = await getMatchHistoriesFromAPI(puuid, start: start, count: count);
-      print("${response.matchOverviews?.length} new matches");
-      response.matchOverviews?.forEach((element) {
-        returnList.add(element);
-      });
-      final lengthOfMatchOverviews = response.matchOverviews?.length??0;
-      if(lengthOfMatchOverviews < 100) {
-        keepSearching = false;
-      }else {
-        start += 100;
-        await Future.delayed(const Duration(seconds: 1), (){});
-      }
-    }
-    print("${returnList.length} total matches");
-    return response;
-  }
+  // Future<LeagueResponse> getAllMatchesFromAPI(String puuid) async {
+  //   final returnList = <String>[];
+  //   var keepSearching = true;
+  //   var start = 0;
+  //   final count = 100;
+  //   LeagueResponse response = LeagueResponse();
+  //   while (keepSearching) {
+  //     response = await getMatchHistoriesFromAPI(puuid, start: start, count: count);
+  //     print("${response.matchOverviews?.length} new matches");
+  //     response.matchOverviews?.forEach((element) {
+  //       returnList.add(element);
+  //     });
+  //     final lengthOfMatchOverviews = response.matchOverviews?.length??0;
+  //     if(lengthOfMatchOverviews < 100) {
+  //       keepSearching = false;
+  //     }else {
+  //       start += 100;
+  //       await Future.delayed(const Duration(seconds: 1), (){});
+  //     }
+  //   }
+  //   print("${returnList.length} total matches");
+  //   return response;
+  // }
 
   Future<LeagueResponse> makeApiCall(String url, APIType apiType) async {
     final now = DateTime.now().millisecondsSinceEpoch;
