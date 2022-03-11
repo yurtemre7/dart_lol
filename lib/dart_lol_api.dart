@@ -13,7 +13,7 @@ import 'LeagueStuff/game_stats.dart';
 import 'LeagueStuff/summoner.dart';
 import 'helper/url_helper.dart';
 
-enum APIType { summoner, matchOverviews, match, rankedSummoner }
+enum APIType { summoner, overviews, match, league, challenger }
 
 class LeagueAPI extends RateLimiter {
   // This is our global ServiceLocator
@@ -95,12 +95,12 @@ class LeagueAPI extends RateLimiter {
       {int start = 0, int count = 100}) async {
     var url =
         'https://$matchServer.api.riotgames.com/lol/match/v5/matches/by-puuid/$puuid/ids?start=$start&count=$count&api_key=$apiToken';
-    final response = await makeApiCall(url, APIType.matchOverviews);
+    final response = await makeApiCall(url, APIType.overviews, puuid: puuid);
     final list = response.matchOverviews;
     /// Build list of Strings
     final returnList = <String>[];
     list?.forEach((element) {
-      returnList.add(element as String);
+      returnList.add(element);
     });
     returnList.sort();
     print("returning ${returnList.length} matches");
@@ -108,32 +108,7 @@ class LeagueAPI extends RateLimiter {
     return response;
   }
 
-  /// Get all matches, find the end
-  // Future<LeagueResponse> getAllMatchesFromAPI(String puuid) async {
-  //   final returnList = <String>[];
-  //   var keepSearching = true;
-  //   var start = 0;
-  //   final count = 100;
-  //   LeagueResponse response = LeagueResponse();
-  //   while (keepSearching) {
-  //     response = await getMatchHistoriesFromAPI(puuid, start: start, count: count);
-  //     print("${response.matchOverviews?.length} new matches");
-  //     response.matchOverviews?.forEach((element) {
-  //       returnList.add(element);
-  //     });
-  //     final lengthOfMatchOverviews = response.matchOverviews?.length??0;
-  //     if(lengthOfMatchOverviews < 100) {
-  //       keepSearching = false;
-  //     }else {
-  //       start += 100;
-  //       await Future.delayed(const Duration(seconds: 1), (){});
-  //     }
-  //   }
-  //   print("${returnList.length} total matches");
-  //   return response;
-  // }
-
-  Future<LeagueResponse> makeApiCall(String url, APIType apiType) async {
+  Future<LeagueResponse> makeApiCall(String url, APIType apiType, {String? puuid, String? summonerId, String? tier, String? division}) async {
     final now = DateTime.now().millisecondsSinceEpoch;
     if (!passesApiCallsRateLimit(now))
       returnLeagueResponse(responseCode: 429, retryTimestamp: now + 30000);
@@ -151,10 +126,12 @@ class LeagueAPI extends RateLimiter {
         case APIType.summoner:
           {
             final s = Summoner.fromJson(json.decode(response.body));
+            saveSummoner(s.name??"", response.body);
             return returnLeagueResponse(summoner: s);
           }
-        case APIType.matchOverviews:
+        case APIType.overviews:
           {
+            saveMatchHistories(puuid??"", response.body);
             final list = json.decode(response.body) as List<dynamic>;
             final returnList = <String>[];
             list.forEach((element) {
@@ -165,13 +142,19 @@ class LeagueAPI extends RateLimiter {
         case APIType.match:
           {
             final match = Match.fromJson(json.decode(response.body));
+            await saveMatch(match.metadata?.matchId??"", response.body);
             return returnLeagueResponse(match: match);
           }
-        case APIType.rankedSummoner:
+        case APIType.league:
           {
             final rankedSummoner = LeagueEntryDto.fromJson(json.decode(response.body));
+            saveRankedSummoner(summonerId??"", response.body);
             return returnLeagueResponse(rankedEntryDTO: rankedSummoner);
           }
+        case APIType.challenger:
+          final challengerPlayers = leagueEntryDtoFromJson(response.body);
+          saveChallengerPlayers(tier!, division!, response.body);
+          return returnLeagueResponse(rankedPlayers: challengerPlayers);
       }
     } else if (response.statusCode == 429) {
       print("We received a 429");
@@ -186,74 +169,16 @@ class LeagueAPI extends RateLimiter {
     }
   }
 
-  /// Get an Future instance of the ChampionMasteries class.
-  /// So use the
-  /// ```
-  /// .then(onValue){
-  ///
-  /// }
-  /// ```
-  /// method to get their champion name, level and if chest aquired.
-  Future<List<ChampionMastery>?> getChampionMasteriesFromAPI(
-      {String? summonerID}) async {
-    var url =
-        'https://$server.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/$summonerID?api_key=$apiToken';
-    var response = await http.get(
-      Uri.parse(url),
-    );
-    var championMasteries = json.decode(
-      response.body,
-    );
-
-    champMasteriesList = [];
-    championMasteries.forEach(
-      (championMastery) {
-        champMasteriesList!.add(
-          ChampionMastery.fromJson(
-            json.decode(json.encode(championMastery)),
-          ),
-        );
-      },
-    );
-
-    return champMasteriesList;
-  }
-
-  Future<LeagueEntryDto?> getRankInfoFromAPI({String? summonerID}) async {
-    var url =
-        'https://$server.api.riotgames.com/lol/league/v4/entries/by-summoner/$summonerID?api_key=$apiToken';
-    final response = await makeApiCall(url, APIType.rankedSummoner);
+  Future<LeagueEntryDto?> getLeagueInfoFromAPI({String? summonerID}) async {
+    var url = 'https://$server.api.riotgames.com/lol/league/v4/entries/by-summoner/$summonerID?api_key=$apiToken';
+    final response = await makeApiCall(url, APIType.league);
     return response.leagueEntryDto;
   }
 
-  Future<GameStat?> getCurrentGameFromAPI(
-      {String? summonerID, String? summonerName}) async {
-    var url =
-        'https://$server.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/$summonerID?api_key=$apiToken';
-    print("URL : $url");
-    var response = await http.get(
-      Uri.parse(url),
-    );
-    if (response.statusCode != 404) {
-      return GameStat.fromJson(
-        json.decode(
-          response.body,
-        ),
-        summonerName,
-        summonerID,
-      );
-    }
-    return null;
-  }
-
-  Future<List<LeagueEntryDto>> getChallengerPlayersFromAPI(String queue, String tier, String division, {int page = 1}) async {
+  Future<List<LeagueEntryDto>?> getChallengerPlayersFromAPI(String queue, String tier, String division, {int page = 1}) async {
     var url = 'https://$server.api.riotgames.com/lol/league-exp/v4/entries/$queue/$tier/$division?page=$page&api_key=$apiToken';
-    print("URL : $url");
-    var response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200) {
-      return leagueEntryDtoFromJson((response.body));
-    }
-    return <LeagueEntryDto>[];
+    final response = await makeApiCall(url, APIType.challenger, tier: tier, division: division);
+    return response.rankedPlayers;
   }
 }
 

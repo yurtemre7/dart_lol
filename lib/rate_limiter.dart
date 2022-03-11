@@ -5,7 +5,9 @@ import 'LeagueStuff/responses/league_response.dart';
 import 'LeagueStuff/summoner.dart';
 import 'package:dart_lol/LeagueStuff/match.dart';
 
-class RateLimiter {
+import 'dart_lol_db.dart';
+
+class RateLimiter extends DbStore {
 
   List apiCalls = [];
   /// App Rate Limit
@@ -26,7 +28,8 @@ class RateLimiter {
     Summoner? summoner,
     List<String>? matchOverviews,
     Match? match,
-    LeagueEntryDto? rankedEntryDTO}) {
+    LeagueEntryDto? rankedEntryDTO,
+    List<LeagueEntryDto>? rankedPlayers}) {
     return LeagueResponse(
       responseCode: responseCode,
       retryTimestamp: retryTimestamp,
@@ -36,7 +39,8 @@ class RateLimiter {
       summoner: summoner,
       matchOverviews: matchOverviews,
       match: match,
-      leagueEntryDto: rankedEntryDTO
+      leagueEntryDto: rankedEntryDTO,
+      rankedPlayers: rankedPlayers
     );
   }
 

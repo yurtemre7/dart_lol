@@ -14,6 +14,7 @@ class LeagueResponse {
   List<String>? matchOverviews;
   final Match? match;
   final LeagueEntryDto? leagueEntryDto;
+  final List<LeagueEntryDto>? rankedPlayers;
 
   LeagueResponse({
     this.responseCode,
@@ -23,5 +24,6 @@ class LeagueResponse {
     this.summoner,
     this.matchOverviews,
     this.match,
-    this.leagueEntryDto});
+    this.leagueEntryDto,
+    this.rankedPlayers});
 }
