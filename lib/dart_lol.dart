@@ -16,13 +16,13 @@ class League extends LeagueAPI {
             appUpperLimitCount: upperLimitCount);
 
   /// Summoner
-  Future<LeagueResponse?> getSummonerFromDb(String puuid, bool fallbackAPI) async {
-    final s = summonerStorage.getItem("$puuid");
+  Future<LeagueResponse?> getSummonerFromDb(String name, bool fallbackAPI) async {
+    final s = summonerStorage.getItem("$name");
     if (s != null) {
       final newS = Summoner.fromJson(json.decode(s));
       return returnLeagueResponse(summoner: newS);
     } else if (fallbackAPI) {
-      final summoner = await getSummonerFromAPI(puuid);
+      final summoner = await getSummonerFromAPI(name);
       return summoner;
     }
     else {

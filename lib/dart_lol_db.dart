@@ -9,10 +9,7 @@ class DbStore {
   final rankedChallengerSoloStorage = new LocalStorage('ranked_challenger_solo');
 
   Future saveSummoner(String summonerName, String summonerJson) async {
-    if(summonerJson == "") {
-      print("we're saving summoner json == ''");
-      return;
-    }
+    summonerName = summonerName.toLowerCase();
     await summonerStorage.setItem(summonerName, summonerJson);
   }
 
@@ -38,7 +35,7 @@ class DbStore {
     final oldJson = matchHistoryStorage.getItem(puuid);
     print("Saving match histories");
     var oldMatches = [];
-    if(oldJson != "") {
+    if(oldJson != null) {
       oldMatches = json.decode(oldJson);
     }
     final newMatches = json.decode(newJson);
