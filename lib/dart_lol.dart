@@ -85,22 +85,15 @@ class League extends LeagueAPI {
     bool keepSearching = true;
     int pageNumber = 1;
     List<LeagueEntryDto> list = [];
-    final newPlayers = rankedChallengerSoloStorage.getItem("$division-$pageNumber");
+    final newPlayers = rankedChallengerSoloStorage.getItem("$tier-$division");
     if(newPlayers == null && fallbackAPI == true) {
       final rankedPlayed = await getChallengerPlayersFromAPI(queue, tier, division);
-      saveChallengerPlayers(tier, division, json.encode(rankedPlayed));
       return rankedPlayed;
     }
-    while(keepSearching) {
-      final newPlayers = rankedChallengerSoloStorage.getItem("$division-$pageNumber");
-      if (newPlayers == null) {
-        keepSearching = false;
-      }else {
-        final myLeagueEntryForThisPage = leagueEntryDtoFromJson(newPlayers);
-        list.addAll(myLeagueEntryForThisPage);
-        pageNumber++;
-      }
-    }
+    final myLeagueEntryForThisPage = leagueEntryDtoFromJson(newPlayers);
+    myLeagueEntryForThisPage.forEach((element) {
+      list.add(element);
+    });
     return list;
   }
   /// Challenger Players
