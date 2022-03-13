@@ -17,6 +17,7 @@ class League extends LeagueAPI {
 
   /// Summoner
   Future<LeagueResponse?> getSummonerFromDb(String name, bool fallbackAPI) async {
+    name = name.toLowerCase();
     final s = summonerStorage.getItem("$name");
     if (s != null) {
       final newS = Summoner.fromJson(json.decode(s));
@@ -30,7 +31,6 @@ class League extends LeagueAPI {
     }
   }
   /// Summoner
-
 
   /// Match
   Future<LeagueResponse> getMatch(String matchId, {bool fallbackAPI = true}) async {
