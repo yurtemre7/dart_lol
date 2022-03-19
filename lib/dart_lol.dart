@@ -38,7 +38,6 @@ class League extends LeagueAPI {
     if (valueMap != null) {
       final that = json.decode(valueMap);
       final matchFromJson = Match.fromJson((that));
-      print(matchFromJson.metadata?.matchId);
       return returnLeagueResponse(match: matchFromJson);
     } else if (fallbackAPI == false)
       return returnLeagueResponse();
@@ -54,10 +53,8 @@ class League extends LeagueAPI {
   /// Match Histories
   Future<LeagueResponse> getMatchHistories(String puuid, {bool allMatches = true, int start = 0, int count = 100, bool fallBackAPI = true, bool forceApi = false}) async {
     final matchHistoryString = matchHistoryStorage.getItem(puuid);
-    print("Match histories from db:");
     if (forceApi || matchHistoryString == null) {
       final histories = await getMatchHistoriesFromAPI(puuid, start: start, count: count);
-      print("Returning from api");
       return histories;
     }
     final list = json.decode(matchHistoryString);
@@ -67,7 +64,6 @@ class League extends LeagueAPI {
         returnList.add(element as String);
       });
       returnList.sort();
-      print("Returning all matches");
       return LeagueResponse(matchOverviews: returnList);
     }
       final returnList = <String>[];
@@ -75,18 +71,18 @@ class League extends LeagueAPI {
         returnList.add(list[i]);
       }
       returnList.sort();
-      print("Returning at end");
       return LeagueResponse(matchOverviews: returnList);
     }
   /// Match Histories
 
   /// Challenger Players
   Future<List<LeagueEntryDto>?> getChallengerPlayers(String queue, String tier, String division, {int page = 1, bool fallbackAPI = true}) async {
-    bool keepSearching = true;
-    int pageNumber = 1;
     List<LeagueEntryDto> list = [];
     final newPlayers = rankedChallengerSoloStorage.getItem("$tier-$division");
     if(newPlayers == null && fallbackAPI == true) {
+      if(newPlayers == null) {
+        print("Getting from API because there are no challenger players in database");
+      }
       final rankedPlayed = await getChallengerPlayersFromAPI(queue, tier, division);
       return rankedPlayed;
     }

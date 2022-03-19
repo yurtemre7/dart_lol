@@ -12,6 +12,7 @@ import 'LeagueStuff/champion_mastery.dart';
 import 'LeagueStuff/game_stats.dart';
 import 'LeagueStuff/summoner.dart';
 import 'helper/url_helper.dart';
+import 'new_db_storage.dart';
 
 enum APIType { summoner, overviews, match, league, challenger }
 
@@ -65,6 +66,9 @@ class LeagueAPI extends RateLimiter {
     getIt.registerSingleton<SummonerSpell>(summonerSpell!);
     getIt.registerSingleton<List<RunesReforged>>(runesReforged!);
     getIt.registerSingleton<List<Queues>>(queues!);
+
+    final that = NewDbStorage();
+    await that.saveThat();
   }
 
   /// Get an Future instance of the Summoner() class.
@@ -103,7 +107,6 @@ class LeagueAPI extends RateLimiter {
       returnList.add(element);
     });
     returnList.sort();
-    print("returning ${returnList.length} matches");
     response.matchOverviews = returnList;
     return response;
   }

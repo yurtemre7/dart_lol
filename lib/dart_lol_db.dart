@@ -1,21 +1,21 @@
 import 'dart:convert';
-
 import 'package:localstorage/localstorage.dart';
 
 class DbStore {
-  final summonerStorage = new LocalStorage('summoners_storage');
-  final matchHistoryStorage = new LocalStorage('match_histories');
-  final matchStorage = new LocalStorage('matches');
-  final rankedChallengerSoloStorage = new LocalStorage('ranked_challenger_solo');
+  final LocalStorage summonerStorage = new LocalStorage('summoners_storage');
+  final LocalStorage matchHistoryStorage = new LocalStorage('match_histories');
+  final LocalStorage matchStorage = new LocalStorage('matches');
+  final LocalStorage rankedChallengerSoloStorage = new LocalStorage('ranked_challenger_solo');
 
-  Future saveSummoner(String summonerName, String summonerJson) async {
+  saveSummoner(String summonerName, String summonerJson) {
     summonerName = summonerName.toLowerCase();
-    await summonerStorage.setItem(summonerName, summonerJson);
+    summonerStorage.setItem(summonerName, summonerJson);
   }
 
-  saveMatch(String matchId, String matchJson) async {
+  saveMatch(String matchId, String matchJson) {
+    print("Saving match");
     try {
-      await matchStorage.setItem(matchId, matchJson);
+      matchStorage.setItem(matchId, matchJson);
     }on FormatException catch (e) {
       print("we cannot save this match $matchId");
     }on Exception catch (e) {
@@ -31,9 +31,8 @@ class DbStore {
   /// 2. Convert new match histories
   /// 3. Add 1 and 2 to a Set
   /// 4. Save Set to local storage
-  saveMatchHistories(String puuid, String newJson) async {
+  saveMatchHistories(String puuid, String newJson) {
     final oldJson = matchHistoryStorage.getItem(puuid);
-    print("Saving match histories");
     var oldMatches = [];
     if(oldJson != null) {
       oldMatches = json.decode(oldJson);
@@ -52,15 +51,15 @@ class DbStore {
     print("${matchesSet.length} total matches");
     final that = matchesSet.toList();
     String theJson = jsonEncode(that);
-    await matchHistoryStorage.setItem(puuid, theJson);
+    matchHistoryStorage.setItem(puuid, theJson);
   }
 
-  saveChallengerPlayers(String tier, String division, String json) async {
-    await rankedChallengerSoloStorage.setItem("$tier-$division", json);
+  saveChallengerPlayers(String tier, String division, String json) {
+    rankedChallengerSoloStorage.setItem("$tier-$division", json);
   }
 
   String rankedSummonerKey = 'ranked_summoner_key_';
-  saveRankedSummoner(String summonerId, String json) async {
-    await summonerStorage.setItem("$rankedSummonerKey$summonerId", json);
+  saveRankedSummoner(String summonerId, String json) {
+    summonerStorage.setItem("$rankedSummonerKey$summonerId", json);
   }
 }

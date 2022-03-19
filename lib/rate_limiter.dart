@@ -1,6 +1,5 @@
 import 'package:dart_lol/LeagueStuff/league_entry_dto.dart';
 import 'package:dart_lol/LeagueStuff/responses/league_response.dart';
-import 'package:dio/dio.dart';
 import 'LeagueStuff/responses/league_response.dart';
 import 'LeagueStuff/summoner.dart';
 import 'package:dart_lol/LeagueStuff/match.dart';
