@@ -71,7 +71,7 @@ class DDragonStorage {
   Future<ChampionStandAlone> getChampionStandAloneFromDb(String championName) async {
     final championsString = await dDragonLocalStorage.getItem("$championsKey-$championName");
     if(championsString == null) {
-      print("Champion data not in db, calling API for specific champion data");
+      print("Champion $championName data not in db, calling API for specific champion data");
       return await DDragonAPI().getSpecificChampionFromApi(championName);
     }
     final championStandAlone = ChampionStandAlone.fromJson(json.decode(championsString), championName);

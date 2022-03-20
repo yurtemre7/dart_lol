@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:dart_lol/ddragon_api.dart';
 import 'package:dart_lol/ddragon_storage.dart';
@@ -65,6 +66,15 @@ class UrlHelper {
   //https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Fizz_1.jpg
   String buildSplashArt(String name) {
     return "${DDRAGON_BASE}cdn/img/champion/splash/${name}_1.jpg";
+  }
+
+  //https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${controller.matchItem.value.championName}_3.jpg
+  Future<String> returnRandomChampionSplash(String name) async {
+    final championStandalone = await dDragonStorage.getChampionStandAloneFromDb("$name");
+    final numberSkins = championStandalone.data?.aatrox?.skins?.length??0;
+    final skinRandomNumber = Random().nextInt(numberSkins);
+    final skinNumber = championStandalone.data?.aatrox?.skins?[skinRandomNumber].num;
+    return buildChampionSplashImage(name, skinNumber??1);
   }
 
   //http://ddragon.leagueoflegends.com/cdn/12.5.1/data/en_US/summoner.json
