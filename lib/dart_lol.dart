@@ -5,9 +5,10 @@ import 'dart:convert';
 import 'package:dart_lol/LeagueStuff/responses/league_response.dart';
 import 'package:dart_lol/dart_lol_api.dart';
 import 'package:dart_lol/LeagueStuff/match.dart';
+import 'package:dart_lol/new_db_storage.dart';
+import 'package:get_it/get_it.dart';
 import 'package:localstorage/localstorage.dart';
 import 'LeagueStuff/league_entry_dto.dart';
-import 'LeagueStuff/rank.dart';
 import 'LeagueStuff/summoner.dart';
 
 class League extends LeagueAPI {
@@ -18,7 +19,7 @@ class League extends LeagueAPI {
   /// Summoner
   Future<LeagueResponse?> getSummonerFromDb(String name, bool fallbackAPI) async {
     name = name.toLowerCase();
-    final s = summonerStorage.getItem("$name");
+    final s = myLocalStorage?.summonerStorage.getItem("$name");
     if (s != null) {
       final newS = Summoner.fromJson(json.decode(s));
       return returnLeagueResponse(summoner: newS);
@@ -34,7 +35,7 @@ class League extends LeagueAPI {
 
   /// Match
   Future<LeagueResponse> getMatch(String matchId, {bool fallbackAPI = true}) async {
-    final valueMap = matchStorage.getItem("$matchId");
+    final valueMap = myLocalStorage?.matchStorage.getItem("$matchId");
     if (valueMap != null) {
       final that = json.decode(valueMap);
       final matchFromJson = Match.fromJson((that));
@@ -52,7 +53,7 @@ class League extends LeagueAPI {
 
   /// Match Histories
   Future<LeagueResponse> getMatchHistories(String puuid, {bool allMatches = true, int start = 0, int count = 100, bool fallBackAPI = true, bool forceApi = false}) async {
-    final matchHistoryString = matchHistoryStorage.getItem(puuid);
+    final matchHistoryString = myLocalStorage?.matchHistoryStorage.getItem(puuid);
     if (forceApi || matchHistoryString == null) {
       final histories = await getMatchHistoriesFromAPI(puuid, start: start, count: count);
       return histories;
@@ -78,7 +79,7 @@ class League extends LeagueAPI {
   /// Challenger Players
   Future<List<LeagueEntryDto>?> getChallengerPlayers(String queue, String tier, String division, {int page = 1, bool fallbackAPI = true}) async {
     List<LeagueEntryDto> list = [];
-    final newPlayers = rankedChallengerSoloStorage.getItem("$tier-$division");
+    final newPlayers = myLocalStorage?.rankedChallengerSoloStorage.getItem("$tier-$division");
     if(newPlayers == null && fallbackAPI == true) {
       if(newPlayers == null) {
         print("Getting from API because there are no challenger players in database");

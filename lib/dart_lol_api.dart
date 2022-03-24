@@ -7,6 +7,7 @@ import 'package:dart_lol/LeagueStuff/match.dart';
 import 'package:dart_lol/rate_limiter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
+import 'package:localstorage/localstorage.dart';
 import 'LeagueStuff/queues.dart';
 import 'LeagueStuff/champion_mastery.dart';
 import 'LeagueStuff/game_stats.dart';
@@ -35,6 +36,7 @@ class LeagueAPI extends RateLimiter {
   List<RunesReforged>? runesReforged;
   SummonerSpell? summonerSpell;
   List<Queues>? queues;
+  NewDbStorage? myLocalStorage;
 
   /// used to build URLs for network requests
   UrlHelper urlHelper = UrlHelper();
@@ -55,9 +57,14 @@ class LeagueAPI extends RateLimiter {
     getIt.registerSingleton<UrlHelper>(urlHelper);
 
     urlHelper.apiKey = this.apiToken;
+
+    final LocalStorage summonerStorage2 = LocalStorage('summoners');
+    summonerStorage2.setItem("key", "998");
   }
 
   Future init() async {
+    myLocalStorage = NewDbStorage();
+
     await urlHelper.dDragonStorage.getVersionFromDb();
     summonerSpell = await urlHelper.dDragonStorage.getSummonerSpellsFromDb();
     runesReforged = await urlHelper.dDragonStorage.getRunesFromDb();
@@ -66,9 +73,7 @@ class LeagueAPI extends RateLimiter {
     getIt.registerSingleton<SummonerSpell>(summonerSpell!);
     getIt.registerSingleton<List<RunesReforged>>(runesReforged!);
     getIt.registerSingleton<List<Queues>>(queues!);
-
-    final that = NewDbStorage();
-    await that.saveThat();
+    getIt.registerSingleton<NewDbStorage>(myLocalStorage!);
   }
 
   /// Get an Future instance of the Summoner() class.
@@ -129,12 +134,12 @@ class LeagueAPI extends RateLimiter {
         case APIType.summoner:
           {
             final s = Summoner.fromJson(json.decode(response.body));
-            saveSummoner(s.name??"", response.body);
+            myLocalStorage?.saveSummoner(s.name??"", response.body);
             return returnLeagueResponse(summoner: s);
           }
         case APIType.overviews:
           {
-            saveMatchHistories(puuid??"", response.body);
+            myLocalStorage?.saveMatchHistories(puuid??"", response.body);
             final list = json.decode(response.body) as List<dynamic>;
             final returnList = <String>[];
             list.forEach((element) {
@@ -145,18 +150,18 @@ class LeagueAPI extends RateLimiter {
         case APIType.match:
           {
             final match = Match.fromJson(json.decode(response.body));
-            await saveMatch(match.metadata?.matchId??"", response.body);
+            await myLocalStorage?.saveMatch(match.metadata?.matchId??"", response.body);
             return returnLeagueResponse(match: match);
           }
         case APIType.league:
           {
             final rankedSummoner = LeagueEntryDto.fromJson(json.decode(response.body));
-            saveRankedSummoner(summonerId??"", response.body);
+            myLocalStorage?.saveRankedSummoner(summonerId??"", response.body);
             return returnLeagueResponse(rankedEntryDTO: rankedSummoner);
           }
         case APIType.challenger:
           final challengerPlayers = leagueEntryDtoFromJson(response.body);
-          saveChallengerPlayers(tier!, division!, response.body);
+          myLocalStorage?.saveChallengerPlayers(tier!, division!, response.body);
           return returnLeagueResponse(rankedPlayers: challengerPlayers);
       }
     } else if (response.statusCode == 429) {

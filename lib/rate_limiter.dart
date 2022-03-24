@@ -4,9 +4,7 @@ import 'LeagueStuff/responses/league_response.dart';
 import 'LeagueStuff/summoner.dart';
 import 'package:dart_lol/LeagueStuff/match.dart';
 
-import 'dart_lol_db.dart';
-
-class RateLimiter extends DbStore {
+class RateLimiter {
 
   List apiCalls = [];
   /// App Rate Limit
