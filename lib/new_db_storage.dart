@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:localstorage/localstorage.dart';
 
 class NewDbStorage {
+  ///had to do this to get app to create local storage (on main app)
+  ///https://github.com/lesnitsky/flutter_localstorage/issues/60#issuecomment-1029172576
   final LocalStorage summonerStorage = LocalStorage('summoners_storage');
   final LocalStorage matchHistoryStorage = LocalStorage('match_histories');
   final LocalStorage matchStorage = LocalStorage('matches');
