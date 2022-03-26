@@ -54,7 +54,7 @@ class UrlHelper {
 
   /// Profile Icon
   String buildProfileIcon(int iconId) {
-    return "$DDRAGON_BASE/cdn/${getRiotGamesAPIVersion()}/img/profileicon/$iconId.png";
+    return "${DDRAGON_BASE}cdn/${getRiotGamesAPIVersion()}/img/profileicon/$iconId.png";
   }
 
   String buildItemImage(String full) {
