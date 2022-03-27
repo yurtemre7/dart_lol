@@ -16,9 +16,10 @@ class DDragonStorage {
   var currentVersion = "";
 
   /// VERSIONS
-  Future saveVersions(List<String> versions) async {
-    await dDragonLocalStorage.setItem(versionsKey, versions);
-    await dDragonLocalStorage.setItem(versionsLastSaved, DateTime.now().millisecondsSinceEpoch);
+  saveVersions(List<String> versions) {
+    print("saving versions to db");
+    dDragonLocalStorage.setItem(versionsKey, versions);
+    dDragonLocalStorage.setItem(versionsLastSaved, DateTime.now().millisecondsSinceEpoch);
   }
 
   Future<int> getVersionsLastUpdated() async {
@@ -33,9 +34,9 @@ class DDragonStorage {
     }
     final version = await dDragonLocalStorage.getItem(versionsKey);
     if(version == null) {
+      print("version received from api: $currentVersion");
       final versionAPI = await DDragonAPI().getVersionsFromApi();
       currentVersion = versionAPI[0];
-      print("version received from api: $currentVersion");
       return currentVersion;
     }
     currentVersion = version[0];

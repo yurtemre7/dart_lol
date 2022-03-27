@@ -57,9 +57,6 @@ class LeagueAPI extends RateLimiter {
     getIt.registerSingleton<UrlHelper>(urlHelper);
 
     urlHelper.apiKey = this.apiToken;
-
-    final LocalStorage summonerStorage2 = LocalStorage('summoners');
-    summonerStorage2.setItem("key", "998");
   }
 
   Future init() async {
