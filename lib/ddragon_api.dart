@@ -19,7 +19,7 @@ class DDragonAPI {
     final response = await http.get(Uri.parse(url));
     List<String> stringList = (json.decode(response.body) as List<dynamic>).cast<String>();
     var dDragonStorage = GetIt.instance<DDragonStorage>();
-    dDragonStorage.saveVersions(stringList);
+    await dDragonStorage.saveVersions(stringList);
     return stringList;
   }
 

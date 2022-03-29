@@ -10,20 +10,21 @@ import 'LeagueStuff/champions.dart';
 import 'ddragon_api.dart';
 
 class DDragonStorage {
-  final dDragonLocalStorage = new LocalStorage('ddragon_storage');
+  final dDragonLocalStorage = LocalStorage('ddragon_storage');
   final versionsKey = "ddragon_versions";
   final versionsLastSaved = "versions_last_saved";
   var currentVersion = "";
 
   /// VERSIONS
-  saveVersions(List<String> versions) {
+  saveVersions(List<String> versions) async {
     print("saving versions to db");
-    dDragonLocalStorage.setItem(versionsKey, versions);
-    dDragonLocalStorage.setItem(versionsLastSaved, DateTime.now().millisecondsSinceEpoch);
+    await dDragonLocalStorage.setItem(versionsKey, versions);
+    await dDragonLocalStorage.setItem(versionsLastSaved, DateTime.now().millisecondsSinceEpoch);
+    print("Done saving to db");
   }
 
   Future<int> getVersionsLastUpdated() async {
-    return await dDragonLocalStorage.getItem(versionsLastSaved);
+    return dDragonLocalStorage.getItem(versionsLastSaved);
   }
 
   Future<String> getVersionFromDb() async {
@@ -32,7 +33,7 @@ class DDragonStorage {
       print("versions not equal to '': $currentVersion");
       return currentVersion;
     }
-    final version = await dDragonLocalStorage.getItem(versionsKey);
+    final version = dDragonLocalStorage.getItem(versionsKey);
     if(version == null) {
       print("version received from api: $currentVersion");
       final versionAPI = await DDragonAPI().getVersionsFromApi();
@@ -76,7 +77,7 @@ class DDragonStorage {
       return await DDragonAPI().getSpecificChampionFromApi(championName);
     }
     final championStandAlone = ChampionStandAlone.fromJson(json.decode(championsString), championName);
-    print("comparing version ${championStandAlone.version} vs $currentVersion");
+    print("getChampionStandAloneFromDb comparing version ${championStandAlone.version} vs $currentVersion");
     if(championStandAlone.version != currentVersion) {
       print("Champion data out of date, calling API for specific champion data");
       return await DDragonAPI().getSpecificChampionFromApi(championName);

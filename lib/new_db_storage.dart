@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:localstorage/localstorage.dart';
 
+import 'LeagueStuff/summoner.dart';
+
 class NewDbStorage {
   ///had to do this to get app to create local storage (on main app)
   ///https://github.com/lesnitsky/flutter_localstorage/issues/60#issuecomment-1029172576
@@ -12,6 +14,29 @@ class NewDbStorage {
   saveSummoner(String summonerName, String summonerJson) {
     summonerName = summonerName.toLowerCase();
     summonerStorage.setItem(summonerName, summonerJson);
+  }
+
+  String favoriteSummonersKey = "my_favorite_summoners";
+  saveFavoriteSummoners(String summonerName) {
+    summonerName = summonerName.toLowerCase();
+    final that = getFavoriteSummoners();
+    that.add(summonerName);
+    summonerStorage.setItem(favoriteSummonersKey, json.encode(that));
+  }
+
+  removeFavoriteSummoner(String name) {
+    final summoners = getFavoriteSummoners();
+    summoners.removeWhere((element) => element == name);
+    summonerStorage.setItem(favoriteSummonersKey, json.encode(summoners));
+  }
+
+  List<String> getFavoriteSummoners() {
+    final favorites = summonerStorage.getItem(favoriteSummonersKey);
+    if(favorites == null) {
+      return <String>[];
+    }
+    final that = json.decode(favorites);
+    return that;
   }
 
   saveMatch(String matchId, String matchJson) {
