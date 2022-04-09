@@ -1,5 +1,6 @@
 import 'package:dart_lol/LeagueStuff/league_entry_dto.dart';
 import 'package:dart_lol/LeagueStuff/responses/league_response.dart';
+import 'package:dart_lol/dart_lol_api.dart';
 import 'LeagueStuff/responses/league_response.dart';
 import 'LeagueStuff/summoner.dart';
 import 'package:dart_lol/LeagueStuff/match.dart';
@@ -20,6 +21,7 @@ class RateLimiter {
   int headerUpperCurrent = 0;
 
   LeagueResponse returnLeagueResponse({
+    APIType apiType = APIType.summoner,
     int? responseCode = 200,
     int? retryTimestamp = 0,
     Summoner? summoner,
@@ -28,6 +30,7 @@ class RateLimiter {
     LeagueEntryDto? rankedEntryDTO,
     List<LeagueEntryDto>? rankedPlayers}) {
     return LeagueResponse(
+      apiCall: apiType,
       responseCode: responseCode,
       retryTimestamp: retryTimestamp,
       appCurrentRateLimitPercentage: appUpperCurrent/appMaxCallsPerTwoMinutes,

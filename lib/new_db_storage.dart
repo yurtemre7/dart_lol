@@ -4,8 +4,8 @@ import 'package:localstorage/localstorage.dart';
 import 'LeagueStuff/summoner.dart';
 
 class NewDbStorage {
-  ///had to do this to get app to create local storage (on main app)
-  ///https://github.com/lesnitsky/flutter_localstorage/issues/60#issuecomment-1029172576
+  /// Do this in main.dart to get app to create local storage
+  /// https://github.com/lesnitsky/flutter_localstorage/issues/60#issuecomment-1029172576
   final LocalStorage summonerStorage = LocalStorage('summoners_storage');
   final LocalStorage matchHistoryStorage = LocalStorage('match_histories');
   final LocalStorage matchStorage = LocalStorage('matches');
@@ -16,27 +16,55 @@ class NewDbStorage {
     summonerStorage.setItem(summonerName, summonerJson);
   }
 
-  String favoriteSummonersKey = "my_favorite_summoners";
-  saveFavoriteSummoners(String summonerName) {
+  Summoner? getSummoner(String summonerName) {
     summonerName = summonerName.toLowerCase();
-    final that = getFavoriteSummoners();
-    that.add(summonerName);
-    summonerStorage.setItem(favoriteSummonersKey, json.encode(that));
-  }
-
-  removeFavoriteSummoner(String name) {
-    final summoners = getFavoriteSummoners();
-    summoners.removeWhere((element) => element == name);
-    summonerStorage.setItem(favoriteSummonersKey, json.encode(summoners));
-  }
-
-  List<String> getFavoriteSummoners() {
-    final favorites = summonerStorage.getItem(favoriteSummonersKey);
-    if(favorites == null) {
-      return <String>[];
+    final item = summonerStorage.getItem("$summonerName");
+    if(item == null) {
+      return null;
     }
-    final that = json.decode(favorites);
-    return that;
+    final s = json.decode(item);
+    return Summoner.fromJson(s);
+  }
+
+  String recentlySearchedSummonersKey = "recently_searched_summoners_key";
+  saveRecentlySearchedSummoner(String summonerName) {
+    summonerName = summonerName.toLowerCase();
+    final recentlySearched = getRecentlySearchedSummoners();
+    if(!recentlySearched.contains(summonerName)) {
+      recentlySearched.add(summonerName);
+      summonerStorage.setItem(recentlySearchedSummonersKey, json.encode(recentlySearched));
+    }
+  }
+
+  List<dynamic> getRecentlySearchedSummoners() {
+    final recentlySearched = summonerStorage.getItem(recentlySearchedSummonersKey);
+    if(recentlySearched == null) {
+      return <dynamic>[];
+    }
+    final list = json.decode(recentlySearched);
+    return list;
+  }
+
+  removeRecentlySearchedSummoner(String summonerName) {
+    final recentlySearched = getRecentlySearchedSummoners();
+    summonerName = summonerName.toLowerCase();
+    recentlySearched.removeWhere((element) => element == summonerName);
+    summonerStorage.setItem(recentlySearchedSummonersKey, json.encode(recentlySearched));
+  }
+
+  saveFavoriteSummoner(String summonerName) {
+    if(summonerName == "") {
+      return;
+    }
+    final s = getSummoner(summonerName);
+    s?.isFavorite = true;
+    saveSummoner(summonerName, json.encode(s));
+  }
+
+  removeFavoriteSummoner(String summonerName) {
+    final s = getSummoner(summonerName);
+    s?.isFavorite = false;
+    saveSummoner(summonerName, json.encode(s));
   }
 
   saveMatch(String matchId, String matchJson) {

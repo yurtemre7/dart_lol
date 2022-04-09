@@ -1,4 +1,4 @@
-
+import 'package:dart_lol/LeagueStuff/match.dart';
 class Summoner {
   String? id;
   String? accountId;
@@ -7,8 +7,9 @@ class Summoner {
   int? profileIconId;
   int? revisionDate;
   int? summonerLevel;
-  List<String>? matches;
-  bool? isFavorite;
+  List<String>? matchHistories = <String>[];
+  List<Match>? matches = <Match>[];
+  bool? isFavorite = false;
 
   Summoner(
       {this.id,
@@ -18,8 +19,9 @@ class Summoner {
         this.profileIconId,
         this.revisionDate,
         this.summonerLevel,
+        this.matchHistories,
         this.matches,
-        this.isFavorite});
+        this.isFavorite = false});
 
   Summoner.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -29,6 +31,7 @@ class Summoner {
     profileIconId = json['profileIconId'];
     revisionDate = json['revisionDate'];
     summonerLevel = json['summonerLevel'];
+    matches = json['matches'];
     isFavorite = json['isFavorite'];
   }
 
@@ -41,6 +44,7 @@ class Summoner {
     data['profileIconId'] = this.profileIconId;
     data['revisionDate'] = this.revisionDate;
     data['summonerLevel'] = this.summonerLevel;
+    data['matchHistories'] = this.matchHistories;
     data['matches'] = this.matches;
     data['isFavorite'] = this.isFavorite;
     return data;

@@ -1,9 +1,11 @@
 import 'package:dart_lol/LeagueStuff/league_entry_dto.dart';
 
+import '../../dart_lol_api.dart';
 import '../summoner.dart';
 import 'package:dart_lol/LeagueStuff/match.dart';
 
 class LeagueResponse {
+  final APIType? apiCall;
   final int? responseCode;
   final int? retryTimestamp;
 
@@ -17,6 +19,7 @@ class LeagueResponse {
   final List<LeagueEntryDto>? rankedPlayers;
 
   LeagueResponse({
+    this.apiCall,
     this.responseCode,
     this.retryTimestamp,
     this.appCurrentRateLimitPercentage,

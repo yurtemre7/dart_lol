@@ -132,7 +132,7 @@ class LeagueAPI extends RateLimiter {
           {
             final s = Summoner.fromJson(json.decode(response.body));
             myLocalStorage?.saveSummoner(s.name??"", response.body);
-            return returnLeagueResponse(summoner: s);
+            return returnLeagueResponse(summoner: s, apiType: APIType.summoner);
           }
         case APIType.overviews:
           {
@@ -142,24 +142,24 @@ class LeagueAPI extends RateLimiter {
             list.forEach((element) {
               returnList.add(element);
             });
-            return returnLeagueResponse(matchOverviews: returnList);
+            return returnLeagueResponse(matchOverviews: returnList, apiType: APIType.overviews);
           }
         case APIType.match:
           {
             final match = Match.fromJson(json.decode(response.body));
             await myLocalStorage?.saveMatch(match.metadata?.matchId??"", response.body);
-            return returnLeagueResponse(match: match);
+            return returnLeagueResponse(match: match, apiType: APIType.match);
           }
         case APIType.league:
           {
             final rankedSummoner = LeagueEntryDto.fromJson(json.decode(response.body));
             myLocalStorage?.saveRankedSummoner(summonerId??"", response.body);
-            return returnLeagueResponse(rankedEntryDTO: rankedSummoner);
+            return returnLeagueResponse(rankedEntryDTO: rankedSummoner, apiType: APIType.league);
           }
         case APIType.challenger:
           final challengerPlayers = leagueEntryDtoFromJson(response.body);
           myLocalStorage?.saveChallengerPlayers(tier!, division!, response.body);
-          return returnLeagueResponse(rankedPlayers: challengerPlayers);
+          return returnLeagueResponse(rankedPlayers: challengerPlayers, apiType: APIType.challenger);
       }
     } else if (response.statusCode == 429) {
       print("We received a 429");

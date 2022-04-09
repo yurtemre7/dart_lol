@@ -18,11 +18,9 @@ class League extends LeagueAPI {
 
   /// Summoner
   Future<LeagueResponse?> getSummonerFromDb(String name, bool fallbackAPI) async {
-    name = name.toLowerCase();
-    final s = myLocalStorage?.summonerStorage.getItem("$name");
+    final s = myLocalStorage?.getSummoner("$name");
     if (s != null) {
-      final newS = Summoner.fromJson(json.decode(s));
-      return returnLeagueResponse(summoner: newS);
+      return returnLeagueResponse(summoner: s);
     } else if (fallbackAPI) {
       final summoner = await getSummonerFromAPI(name);
       return summoner;
