@@ -147,7 +147,7 @@ class LeagueAPI extends RateLimiter {
         case APIType.match:
           {
             final match = Match.fromJson(json.decode(response.body));
-            await myLocalStorage?.saveMatch(match.metadata?.matchId??"", response.body);
+            myLocalStorage?.saveMatch(match.metadata?.matchId??"", response.body);
             return returnLeagueResponse(match: match, apiType: APIType.match);
           }
         case APIType.league:

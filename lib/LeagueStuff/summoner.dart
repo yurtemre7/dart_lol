@@ -1,4 +1,5 @@
 import 'package:dart_lol/LeagueStuff/match.dart';
+
 class Summoner {
   String? id;
   String? accountId;
@@ -31,7 +32,6 @@ class Summoner {
     profileIconId = json['profileIconId'];
     revisionDate = json['revisionDate'];
     summonerLevel = json['summonerLevel'];
-    matches = json['matches'];
     isFavorite = json['isFavorite'];
   }
 

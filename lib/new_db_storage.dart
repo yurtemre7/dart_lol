@@ -11,14 +11,14 @@ class NewDbStorage {
   final LocalStorage matchStorage = LocalStorage('matches');
   final LocalStorage rankedChallengerSoloStorage = LocalStorage('ranked_challenger_solo');
 
-  saveSummoner(String summonerName, String summonerJson) {
+  saveSummoner(String summonerName, String summonerJson) async {
     summonerName = summonerName.toLowerCase();
-    summonerStorage.setItem(summonerName, summonerJson);
+    await summonerStorage.setItem(summonerName, summonerJson);
   }
 
-  Summoner? getSummoner(String summonerName) {
+  Future<Summoner?> getSummoner(String summonerName) async {
     summonerName = summonerName.toLowerCase();
-    final item = summonerStorage.getItem("$summonerName");
+    final item = await summonerStorage.getItem("$summonerName");
     if(item == null) {
       return null;
     }
@@ -27,16 +27,16 @@ class NewDbStorage {
   }
 
   String recentlySearchedSummonersKey = "recently_searched_summoners_key";
-  saveRecentlySearchedSummoner(String summonerName) {
+  saveRecentlySearchedSummoner(String summonerName) async {
     summonerName = summonerName.toLowerCase();
-    final recentlySearched = getRecentlySearchedSummoners();
+    final recentlySearched = await getRecentlySearchedSummoners();
     if(!recentlySearched.contains(summonerName)) {
       recentlySearched.add(summonerName);
       summonerStorage.setItem(recentlySearchedSummonersKey, json.encode(recentlySearched));
     }
   }
 
-  List<dynamic> getRecentlySearchedSummoners() {
+  Future<List> getRecentlySearchedSummoners() async {
     final recentlySearched = summonerStorage.getItem(recentlySearchedSummonersKey);
     if(recentlySearched == null) {
       return <dynamic>[];
@@ -45,26 +45,26 @@ class NewDbStorage {
     return list;
   }
 
-  removeRecentlySearchedSummoner(String summonerName) {
-    final recentlySearched = getRecentlySearchedSummoners();
+  removeRecentlySearchedSummoner(String summonerName) async {
+    final recentlySearched = await getRecentlySearchedSummoners();
     summonerName = summonerName.toLowerCase();
     recentlySearched.removeWhere((element) => element == summonerName);
-    summonerStorage.setItem(recentlySearchedSummonersKey, json.encode(recentlySearched));
+    await summonerStorage.setItem(recentlySearchedSummonersKey, json.encode(recentlySearched));
   }
 
-  saveFavoriteSummoner(String summonerName) {
+  saveFavoriteSummoner(String summonerName) async {
     if(summonerName == "") {
       return;
     }
-    final s = getSummoner(summonerName);
+    final s = await getSummoner(summonerName);
     s?.isFavorite = true;
     saveSummoner(summonerName, json.encode(s));
   }
 
-  removeFavoriteSummoner(String summonerName) {
-    final s = getSummoner(summonerName);
+  removeFavoriteSummoner(String summonerName) async {
+    final s = await getSummoner(summonerName);
     s?.isFavorite = false;
-    saveSummoner(summonerName, json.encode(s));
+    await saveSummoner(summonerName, json.encode(s));
   }
 
   saveMatch(String matchId, String matchJson) {
