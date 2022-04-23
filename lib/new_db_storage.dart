@@ -11,7 +11,7 @@ class NewDbStorage {
   final LocalStorage matchStorage = LocalStorage('matches');
   final LocalStorage rankedChallengerSoloStorage = LocalStorage('ranked_challenger_solo');
 
-  saveSummoner(String summonerName, String summonerJson) async {
+  Future saveSummoner(String summonerName, String summonerJson) async {
     summonerName = summonerName.toLowerCase();
     await summonerStorage.setItem(summonerName, summonerJson);
   }
@@ -27,7 +27,7 @@ class NewDbStorage {
   }
 
   String recentlySearchedSummonersKey = "recently_searched_summoners_key";
-  saveRecentlySearchedSummoner(String summonerName) async {
+  Future saveRecentlySearchedSummoner(String summonerName) async {
     summonerName = summonerName.toLowerCase();
     final recentlySearched = await getRecentlySearchedSummoners();
     if(!recentlySearched.contains(summonerName)) {
@@ -52,7 +52,7 @@ class NewDbStorage {
     await summonerStorage.setItem(recentlySearchedSummonersKey, json.encode(recentlySearched));
   }
 
-  saveFavoriteSummoner(String summonerName) async {
+  Future saveFavoriteSummoner(String summonerName) async {
     if(summonerName == "") {
       return;
     }
@@ -67,7 +67,7 @@ class NewDbStorage {
     await saveSummoner(summonerName, json.encode(s));
   }
 
-  saveMatch(String matchId, String matchJson) {
+  Future saveMatch(String matchId, String matchJson) async {
     print("Saving match");
     try {
       matchStorage.setItem(matchId, matchJson);
@@ -86,7 +86,7 @@ class NewDbStorage {
   /// 2. Convert new match histories
   /// 3. Add 1 and 2 to a Set
   /// 4. Save Set to local storage
-  saveMatchHistories(String puuid, String newJson) {
+  Future saveMatchHistories(String puuid, String newJson) async {
     final oldJson = matchHistoryStorage.getItem(puuid);
     var oldMatches = [];
     if(oldJson != null) {
@@ -114,7 +114,7 @@ class NewDbStorage {
   }
 
   String rankedSummonerKey = 'ranked_summoner_key_';
-  saveRankedSummoner(String summonerId, String json) {
+  Future saveRankedSummoner(String summonerId, String json) async {
     summonerStorage.setItem("$rankedSummonerKey$summonerId", json);
   }
 }

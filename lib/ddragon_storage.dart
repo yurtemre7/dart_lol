@@ -16,8 +16,10 @@ class DDragonStorage {
   var currentVersion = "";
 
   /// VERSIONS
-  saveVersions(List<String> versions) async {
+  saveVersions(String versions) async {
     print("saving versions to db");
+    print(versions.runtimeType);
+    print(versions);
     await dDragonLocalStorage.setItem(versionsKey, versions);
     await dDragonLocalStorage.setItem(versionsLastSaved, DateTime.now().millisecondsSinceEpoch);
     print("Done saving to db");
@@ -28,20 +30,23 @@ class DDragonStorage {
   }
 
   Future<String> getVersionFromDb() async {
-    print("Getting versions from db");
     if(currentVersion != "") {
-      print("versions not equal to '': $currentVersion");
+      print("versions saved in class, returning: $currentVersion");
       return currentVersion;
     }
     final version = dDragonLocalStorage.getItem(versionsKey);
     if(version == null) {
-      print("version received from api: $currentVersion");
       final versionAPI = await DDragonAPI().getVersionsFromApi();
-      currentVersion = versionAPI[0];
+      if(versionAPI.isEmpty) {
+        print("setting to default version of 12.6.1");
+        currentVersion = "12.6.1";
+      }else {
+        print("0th position: ${versionAPI[0]}");
+        currentVersion = versionAPI[0];
+      }
       return currentVersion;
     }
-    currentVersion = version[0];
-    print("version received from db: $currentVersion");
+    currentVersion = json.decode(version)[0];
     return currentVersion;
   }
 

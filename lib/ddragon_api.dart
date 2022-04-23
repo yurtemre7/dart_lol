@@ -14,12 +14,16 @@ class DDragonAPI {
 
   //https://ddragon.leagueoflegends.com/api/versions.json
   Future<List<String>> getVersionsFromApi() async {
+    print("Getting versions from api");
     var urlHelper = GetIt.instance<UrlHelper>();
     var url = urlHelper.returnVersionsUrl();
+    print("Trying to call $url");
     final response = await http.get(Uri.parse(url));
+    print("after call");
+    print(response);
     List<String> stringList = (json.decode(response.body) as List<dynamic>).cast<String>();
     var dDragonStorage = GetIt.instance<DDragonStorage>();
-    await dDragonStorage.saveVersions(stringList);
+    await dDragonStorage.saveVersions(response.body);
     return stringList;
   }
 
