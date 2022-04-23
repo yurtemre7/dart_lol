@@ -63,14 +63,14 @@ class League extends LeagueAPI {
       list.forEach((element) {
         returnList.add(element as String);
       });
-      returnList.sort();
+      returnList.sort((a, b) => b.compareTo(a));
       return LeagueResponse(matchOverviews: returnList);
     }
       final returnList = <String>[];
       for (int i = start; i < count; i++) {
         returnList.add(list[i]);
       }
-      returnList.sort();
+      returnList.sort((a, b) => b.compareTo(a));
       return LeagueResponse(matchOverviews: returnList);
     }
   /// Match Histories
