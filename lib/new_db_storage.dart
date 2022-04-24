@@ -1,28 +1,31 @@
 import 'dart:convert';
+import 'package:get_it/get_it.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:sembast/sembast_io.dart';
 
 import 'LeagueStuff/summoner.dart';
+import 'package:sembast/sembast.dart';
 
 class NewDbStorage {
   /// Do this in main.dart to get app to create local storage
   /// https://github.com/lesnitsky/flutter_localstorage/issues/60#issuecomment-1029172576
-  final LocalStorage summonerStorage = LocalStorage('summoners_storage');
-  final LocalStorage matchHistoryStorage = LocalStorage('match_histories');
-  final LocalStorage matchStorage = LocalStorage('matches');
-  final LocalStorage rankedChallengerSoloStorage = LocalStorage('ranked_challenger_solo');
 
   Future saveSummoner(String summonerName, String summonerJson) async {
     summonerName = summonerName.toLowerCase();
-    await summonerStorage.setItem(summonerName, summonerJson);
+    var store = StoreRef.main();
+    final db = GetIt.instance<Database>();
+    await store.record(summonerName).put(db, summonerJson);
   }
 
   Future<Summoner?> getSummoner(String summonerName) async {
     summonerName = summonerName.toLowerCase();
-    final item = await summonerStorage.getItem("$summonerName");
+    var store = StoreRef.main();
+    final db = GetIt.instance<Database>();
+    var item = await store.record(summonerName).get(db);
     if(item == null) {
       return null;
     }
-    final s = json.decode(item);
+    final s = json.decode(item as String);
     return Summoner.fromJson(s);
   }
 
@@ -32,12 +35,18 @@ class NewDbStorage {
     final recentlySearched = await getRecentlySearchedSummoners();
     if(!recentlySearched.contains(summonerName)) {
       recentlySearched.add(summonerName);
-      summonerStorage.setItem(recentlySearchedSummonersKey, json.encode(recentlySearched));
+      var store = StoreRef.main();
+      final db = GetIt.instance<Database>();
+      await store.record(recentlySearchedSummonersKey).put(db, json.encode(recentlySearched));
+      //summonerStorage.setItem(recentlySearchedSummonersKey, json.encode(recentlySearched));
     }
   }
 
   Future<List> getRecentlySearchedSummoners() async {
-    final recentlySearched = summonerStorage.getItem(recentlySearchedSummonersKey);
+    //final recentlySearched = summonerStorage.getItem(recentlySearchedSummonersKey);
+    var store = StoreRef.main();
+    final db = GetIt.instance<Database>();
+    var recentlySearched = await store.record(recentlySearchedSummonersKey).get(db);
     if(recentlySearched == null) {
       return <dynamic>[];
     }
@@ -45,11 +54,14 @@ class NewDbStorage {
     return list;
   }
 
-  removeRecentlySearchedSummoner(String summonerName) async {
+  Future removeRecentlySearchedSummoner(String summonerName) async {
     final recentlySearched = await getRecentlySearchedSummoners();
     summonerName = summonerName.toLowerCase();
     recentlySearched.removeWhere((element) => element == summonerName);
-    await summonerStorage.setItem(recentlySearchedSummonersKey, json.encode(recentlySearched));
+    var store = StoreRef.main();
+    final db = GetIt.instance<Database>();
+    await store.record(recentlySearchedSummonersKey).put(db, json.encode(recentlySearched));
+    //await summonerStorage.setItem(recentlySearchedSummonersKey, json.encode(recentlySearched));
   }
 
   Future saveFavoriteSummoner(String summonerName) async {
@@ -61,7 +73,7 @@ class NewDbStorage {
     saveSummoner(summonerName, json.encode(s));
   }
 
-  removeFavoriteSummoner(String summonerName) async {
+  Future removeFavoriteSummoner(String summonerName) async {
     final s = await getSummoner(summonerName);
     s?.isFavorite = false;
     await saveSummoner(summonerName, json.encode(s));
@@ -70,7 +82,10 @@ class NewDbStorage {
   Future saveMatch(String matchId, String matchJson) async {
     print("Saving match");
     try {
-      matchStorage.setItem(matchId, matchJson);
+      //matchStorage.setItem(matchId, matchJson);
+      var store = StoreRef.main();
+      final db = GetIt.instance<Database>();
+      await store.record(matchId).put(db, matchJson);
     }on FormatException catch (e) {
       print("we cannot save this match $matchId");
     }on Exception catch (e) {
@@ -87,7 +102,10 @@ class NewDbStorage {
   /// 3. Add 1 and 2 to a Set
   /// 4. Save Set to local storage
   Future saveMatchHistories(String puuid, String newJson) async {
-    final oldJson = matchHistoryStorage.getItem(puuid);
+    //final oldJson = matchHistoryStorage.getItem(puuid);
+    var store = StoreRef.main();
+    final db = GetIt.instance<Database>();
+    var oldJson = await store.record(puuid).get(db);
     var oldMatches = [];
     if(oldJson != null) {
       oldMatches = json.decode(oldJson);
@@ -106,15 +124,20 @@ class NewDbStorage {
     print("${matchesSet.length} total matches");
     final that = matchesSet.toList();
     String theJson = jsonEncode(that);
-    matchHistoryStorage.setItem(puuid, theJson);
+    await store.record(puuid).put(db, theJson);
   }
 
-  saveChallengerPlayers(String tier, String division, String json) {
-    rankedChallengerSoloStorage.setItem("$tier-$division", json);
+  Future saveChallengerPlayers(String tier, String division, String json) async {
+    var store = StoreRef.main();
+    final db = GetIt.instance<Database>();
+    await store.record("$tier-$division").put(db, json);
+    //rankedChallengerSoloStorage.setItem("$tier-$division", json);
   }
 
   String rankedSummonerKey = 'ranked_summoner_key_';
   Future saveRankedSummoner(String summonerId, String json) async {
-    summonerStorage.setItem("$rankedSummonerKey$summonerId", json);
+    var store = StoreRef.main();
+    final db = GetIt.instance<Database>();
+    await store.record("$rankedSummonerKey$summonerId").put(db, json);
   }
 }

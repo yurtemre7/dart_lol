@@ -13,6 +13,7 @@ dependencies:
   get_it: ^7.2.0
   http: ^0.13.3
   localstorage: ^4.0.0+1
+  path_provider: ^2.0.9
   sembast: ^3.2.0
 
 dev_dependencies:

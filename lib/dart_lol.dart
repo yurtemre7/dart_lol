@@ -5,11 +5,9 @@ import 'dart:convert';
 import 'package:dart_lol/LeagueStuff/responses/league_response.dart';
 import 'package:dart_lol/dart_lol_api.dart';
 import 'package:dart_lol/LeagueStuff/match.dart';
-import 'package:dart_lol/new_db_storage.dart';
 import 'package:get_it/get_it.dart';
-import 'package:localstorage/localstorage.dart';
+import 'package:sembast/sembast.dart';
 import 'LeagueStuff/league_entry_dto.dart';
-import 'LeagueStuff/summoner.dart';
 
 class League extends LeagueAPI {
   League({required apiToken, required String server, int lowerLimitCount = 20, int upperLimitCount = 100}): super(apiToken: apiToken, server: server,
@@ -34,9 +32,11 @@ class League extends LeagueAPI {
 
   /// Match
   Future<LeagueResponse> getMatch(String matchId, {bool fallbackAPI = true}) async {
-    final valueMap = myLocalStorage?.matchStorage.getItem("$matchId");
+    var store = StoreRef.main();
+    final db = GetIt.instance<Database>();
+    var valueMap = await store.record(matchId).get(db);
     if (valueMap != null) {
-      final that = json.decode(valueMap);
+      final that = json.decode(valueMap as String);
       final matchFromJson = Match.fromJson((that));
       return returnLeagueResponse(match: matchFromJson);
     } else if (fallbackAPI == false)
@@ -52,7 +52,9 @@ class League extends LeagueAPI {
 
   /// Match Histories
   Future<LeagueResponse> getMatchHistories(String puuid, {bool allMatches = true, int start = 0, int count = 100, bool fallBackAPI = true, bool forceApi = false}) async {
-    final matchHistoryString = myLocalStorage?.matchHistoryStorage.getItem(puuid);
+    var store = StoreRef.main();
+    final db = GetIt.instance<Database>();
+    var matchHistoryString = await store.record(puuid).get(db);
     if (forceApi || matchHistoryString == null) {
       final histories = await getMatchHistoriesFromAPI(puuid, start: start, count: count);
       return histories;
@@ -78,7 +80,10 @@ class League extends LeagueAPI {
   /// Challenger Players
   Future<List<LeagueEntryDto>?> getChallengerPlayers(String queue, String tier, String division, {int page = 1, bool fallbackAPI = true}) async {
     List<LeagueEntryDto> list = [];
-    final newPlayers = myLocalStorage?.rankedChallengerSoloStorage.getItem("$tier-$division");
+    var store = StoreRef.main();
+    final db = GetIt.instance<Database>();
+    final newPlayers = await store.record("$tier-$division").get(db);
+    //final newPlayers = myLocalStorage?.rankedChallengerSoloStorage.getItem("$tier-$division");
     if(newPlayers == null && fallbackAPI == true) {
       if(newPlayers == null) {
         print("Getting from API because there are no challenger players in database");

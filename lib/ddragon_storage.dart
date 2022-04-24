@@ -16,7 +16,7 @@ class DDragonStorage {
   var currentVersion = "";
 
   /// VERSIONS
-  saveVersions(String versions) async {
+  Future saveVersions(String versions) async {
     print("saving versions to db");
     print(versions.runtimeType);
     print(versions);
@@ -53,13 +53,13 @@ class DDragonStorage {
   /// Champions all
   final championsKey = "champions_key";
   final championsLastSaved = "champions_last_saved";
-  saveChampions(String champions) {
-    dDragonLocalStorage.setItem(championsKey, champions);
-    dDragonLocalStorage.setItem(championsLastSaved, DateTime.now().millisecondsSinceEpoch);
+  Future saveChampions(String champions) async {
+    await dDragonLocalStorage.setItem(championsKey, champions);
+    await dDragonLocalStorage.setItem(championsLastSaved, DateTime.now().millisecondsSinceEpoch);
   }
 
-  int getChampionsLastUpdated() {
-    return dDragonLocalStorage.getItem(championsLastSaved);
+  Future<int> getChampionsLastUpdated() async {
+    return await dDragonLocalStorage.getItem(championsLastSaved);
   }
 
   Future<Champions> getChampionsFromDb() async {
@@ -71,8 +71,8 @@ class DDragonStorage {
   /// Champions all end
 
   /// Champions Specific
-  saveSpecificChampion(String json, String championName) {
-    dDragonLocalStorage.setItem("$championsKey-$championName", json);
+  Future saveSpecificChampion(String json, String championName) async {
+    await dDragonLocalStorage.setItem("$championsKey-$championName", json);
   }
 
   Future<ChampionStandAlone> getChampionStandAloneFromDb(String championName) async {
@@ -106,8 +106,8 @@ class DDragonStorage {
     return summonerSpells;
   }
 
-  saveSummonerSpells(String json) {
-    dDragonLocalStorage.setItem(spellKey, json);
+  Future saveSummonerSpells(String json) async{
+    await dDragonLocalStorage.setItem(spellKey, json);
   }
   ///Get summoner spell stuff
 
@@ -129,9 +129,9 @@ class DDragonStorage {
     return runesReforgedFromJson(runesString);
   }
 
-  saveRunesReforged(String json) {
-    dDragonLocalStorage.setItem(runeKey, json);
-    dDragonLocalStorage.setItem(runeKeyDate, currentVersion);
+  Future saveRunesReforged(String json) async {
+    await dDragonLocalStorage.setItem(runeKey, json);
+    await dDragonLocalStorage.setItem(runeKeyDate, currentVersion);
   }
   /// Runes
 
@@ -147,9 +147,9 @@ class DDragonStorage {
     return queuesFromJson(queueString);
   }
 
-  saveQueuesToDb(String json) {
-    dDragonLocalStorage.setItem(queueKey, json);
-    dDragonLocalStorage.setItem(queueVersion, currentVersion);
+  Future saveQueuesToDb(String json) async {
+    await dDragonLocalStorage.setItem(queueKey, json);
+    await dDragonLocalStorage.setItem(queueVersion, currentVersion);
   }
   /// Queues
 }

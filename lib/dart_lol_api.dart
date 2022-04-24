@@ -7,10 +7,11 @@ import 'package:dart_lol/LeagueStuff/match.dart';
 import 'package:dart_lol/rate_limiter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
-import 'package:localstorage/localstorage.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sembast/sembast.dart';
+import 'package:sembast/sembast_io.dart';
 import 'LeagueStuff/queues.dart';
 import 'LeagueStuff/champion_mastery.dart';
-import 'LeagueStuff/game_stats.dart';
 import 'LeagueStuff/summoner.dart';
 import 'helper/url_helper.dart';
 import 'new_db_storage.dart';
@@ -41,6 +42,10 @@ class LeagueAPI extends RateLimiter {
   /// used to build URLs for network requests
   UrlHelper urlHelper = UrlHelper();
 
+  /// Sembast storage
+  //late DatabaseFactory dbFactory = databaseFactoryIo;
+  late Database db;
+
   LeagueAPI(
       {required this.apiToken,
       required String server,
@@ -60,13 +65,17 @@ class LeagueAPI extends RateLimiter {
   }
 
   Future init() async {
-    myLocalStorage = NewDbStorage();
+    final applicationDirectory = await getApplicationDocumentsDirectory();
+    String dbPath = applicationDirectory.path + 'sample.db';
+    db = await databaseFactoryIo.openDatabase(dbPath);
 
+    myLocalStorage = NewDbStorage();
     await urlHelper.dDragonStorage.getVersionFromDb();
     summonerSpell = await urlHelper.dDragonStorage.getSummonerSpellsFromDb();
     runesReforged = await urlHelper.dDragonStorage.getRunesFromDb();
     queues = await urlHelper.dDragonStorage.getQueuesFromDb();
 
+    getIt.registerSingleton<Database>(db);
     getIt.registerSingleton<SummonerSpell>(summonerSpell!);
     getIt.registerSingleton<List<RunesReforged>>(runesReforged!);
     getIt.registerSingleton<List<Queues>>(queues!);
@@ -82,6 +91,13 @@ class LeagueAPI extends RateLimiter {
   /// ```
   /// method to get their name, account id, level and revision date.
   Future<LeagueResponse> getSummonerFromAPI(String summonerName) async {
+    var url =
+        'https://$server.api.riotgames.com/lol/summoner/v4/summoners/by-name/$summonerName?api_key=$apiToken';
+    var response = await makeApiCall(url, APIType.summoner);
+    return response;
+  }
+
+  Future<LeagueResponse> getSummonerFromAPISembast(String summonerName) async {
     var url =
         'https://$server.api.riotgames.com/lol/summoner/v4/summoners/by-name/$summonerName?api_key=$apiToken';
     var response = await makeApiCall(url, APIType.summoner);
@@ -108,7 +124,7 @@ class LeagueAPI extends RateLimiter {
     list?.forEach((element) {
       returnList.add(element);
     });
-    returnList.sort();
+    returnList.sort((a, b) => b.compareTo(a));
     response.matchOverviews = returnList;
     return response;
   }
