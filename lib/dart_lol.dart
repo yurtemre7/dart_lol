@@ -51,6 +51,59 @@ class League extends LeagueAPI {
   /// Match
 
   /// Match Histories
+  Future<LeagueResponse> getAllMatchHistories(String puuid, {bool useAPI = true}) async {
+    var store = StoreRef.main();
+    final db = GetIt.instance<Database>();
+    // Always get everything locally first then sort
+    final allLocalMatchHistories = await store.record(puuid).get(db);
+    final dynamicList = json.decode(allLocalMatchHistories) as List;
+
+    final finalList = <String>[];
+    dynamicList.forEach((element) {
+      finalList.add(element);
+    });
+    finalList.sort((a, b) => b.compareTo(a));
+    if(useAPI == false) {
+      return returnLeagueResponse(matchOverviews: finalList);
+    }
+    // Get 1-100 and see how many are new
+    var keepGoing = true;
+    var numberNewGames = 0;
+    var start = 0;
+    var count = 100;
+    while(keepGoing) {
+      numberNewGames = 0;
+      print("Getting match histories $start $count");
+      final newList = await getMatchHistoriesFromAPI(puuid, start: start, count: count);
+      if(newList.matchOverviews?.isEmpty == true) {
+        print("List is empty, exiting");
+        keepGoing = false;
+        continue;
+      }
+      newList.matchOverviews?.forEach((matchId) {
+        if(!finalList.contains(matchId)) {
+          // Match doesn't exist in our list
+          finalList.add(matchId);
+          numberNewGames++;
+        }
+      });
+      if(numberNewGames == 0 && start != 0) {
+        print("$puuid has ${finalList.length} games total");
+        keepGoing = false;
+        continue;
+      }else {
+        print("We just added $numberNewGames new games");
+        start += 100;
+      }
+      final size = newList.matchOverviews?.length??0;
+      if(size < 100){
+        print("Stopping list because it's less than 100");
+        keepGoing = false;
+      }
+    }
+    return returnLeagueResponse(matchOverviews: finalList);
+  }
+
   Future<LeagueResponse> getMatchHistories(String puuid, {bool allMatches = true, int start = 0, int count = 100, bool fallBackAPI = true, bool forceApi = false}) async {
     var store = StoreRef.main();
     final db = GetIt.instance<Database>();
@@ -59,7 +112,8 @@ class League extends LeagueAPI {
       final histories = await getMatchHistoriesFromAPI(puuid, start: start, count: count);
       return histories;
     }
-    final list = json.decode(matchHistoryString);
+    final list = json.decode(matchHistoryString) as List;
+    list.sort((a, b) => b.compareTo(a));
     if (allMatches) {
       final returnList = <String>[];
       list.forEach((element) {

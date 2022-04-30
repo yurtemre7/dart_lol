@@ -8,8 +8,8 @@ class Summoner {
   int? profileIconId;
   int? revisionDate;
   int? summonerLevel;
-  List<String>? matchHistories = <String>[];
-  List<Match>? matches = <Match>[];
+  final matchHistories = <String>[];
+  List<Match> matches = <Match>[];
   bool? isFavorite = false;
 
   Summoner(
@@ -20,8 +20,6 @@ class Summoner {
         this.profileIconId,
         this.revisionDate,
         this.summonerLevel,
-        this.matchHistories,
-        this.matches,
         this.isFavorite = false});
 
   Summoner.fromJson(Map<String, dynamic> json) {
