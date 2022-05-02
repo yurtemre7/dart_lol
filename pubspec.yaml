@@ -15,6 +15,7 @@ dependencies:
   localstorage: ^4.0.0+1
   path_provider: ^2.0.9
   sembast: ^3.2.0
+  timeago: ^3.1.0
 
 dev_dependencies:
   flutter_test:

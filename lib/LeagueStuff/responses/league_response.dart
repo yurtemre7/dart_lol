@@ -5,7 +5,7 @@ import '../summoner.dart';
 import 'package:dart_lol/LeagueStuff/match.dart';
 
 class LeagueResponse {
-  final APIType? apiCall;
+  final APIType? apiType;
   final int? responseCode;
   final int? retryTimestamp;
 
@@ -19,7 +19,7 @@ class LeagueResponse {
   final List<LeagueEntryDto>? rankedPlayers;
 
   LeagueResponse({
-    this.apiCall,
+    this.apiType,
     this.responseCode,
     this.retryTimestamp,
     this.appCurrentRateLimitPercentage,

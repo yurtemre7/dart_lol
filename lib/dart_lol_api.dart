@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dart_lol/LeagueStuff/responses/api_call.dart';
 import 'package:dart_lol/LeagueStuff/runes_reforged.dart';
 import 'package:dart_lol/LeagueStuff/summoner_spells.dart';
 import 'package:dart_lol/LeagueStuff/league_entry_dto.dart';
@@ -15,6 +16,7 @@ import 'LeagueStuff/champion_mastery.dart';
 import 'LeagueStuff/summoner.dart';
 import 'helper/url_helper.dart';
 import 'new_db_storage.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 enum APIType { summoner, overviews, match, league, challenger }
 
@@ -93,15 +95,15 @@ class LeagueAPI extends RateLimiter {
   Future<LeagueResponse> getSummonerFromAPI(String summonerName) async {
     var url =
         'https://$server.api.riotgames.com/lol/summoner/v4/summoners/by-name/$summonerName?api_key=$apiToken';
-    var response = await makeApiCall(url, APIType.summoner);
-    return response;
+    var response = await makeApiCall(ApiCall(time: DateTime.now().millisecondsSinceEpoch, apiType: APIType.summoner, url: url));
+    return response.leagueResponse;
   }
 
   Future<LeagueResponse> getSummonerFromAPISembast(String summonerName) async {
     var url =
         'https://$server.api.riotgames.com/lol/summoner/v4/summoners/by-name/$summonerName?api_key=$apiToken';
-    var response = await makeApiCall(url, APIType.summoner);
-    return response;
+    var response = await makeApiCall(ApiCall(time: DateTime.now().millisecondsSinceEpoch, apiType: APIType.summoner, url: url));
+    return response.leagueResponse;
   }
 
   /// Get an Future instance of the Game class as a List of it.
@@ -117,54 +119,69 @@ class LeagueAPI extends RateLimiter {
       {int start = 0, int count = 100}) async {
     var url =
         'https://$matchServer.api.riotgames.com/lol/match/v5/matches/by-puuid/$puuid/ids?start=$start&count=$count&api_key=$apiToken';
-    final response = await makeApiCall(url, APIType.overviews, puuid: puuid);
-    final list = response.matchOverviews;
+    final response = await makeApiCall(ApiCall(time: DateTime.now().millisecondsSinceEpoch, apiType: APIType.overviews, url: url, puuid: puuid));
+    final list = response.leagueResponse.matchOverviews;
     /// Build list of Strings
     final returnList = <String>[];
     list?.forEach((element) {
       returnList.add(element);
     });
     returnList.sort((a, b) => b.compareTo(a));
-    response.matchOverviews = returnList;
-    return response;
+    response.leagueResponse.matchOverviews = returnList;
+    return response.leagueResponse;
   }
 
-  Future<LeagueResponse> makeApiCall(String url, APIType apiType, {String? puuid, String? summonerId, String? tier, String? division}) async {
+  Future<ApiCall> makeApiCall(ApiCall apiCall) async {
     final now = DateTime.now().millisecondsSinceEpoch;
-    if (!passesApiCallsRateLimit(now))
-      returnLeagueResponse(responseCode: 429, retryTimestamp: now + 30000);
-    if (!passesHeaderRateLimit(now))
-      returnLeagueResponse(responseCode: 429, retryTimestamp: now + 30000);
+    // if (!passesApiCallsRateLimit(now))
+    //   returnLeagueResponse(responseCode: 429, retryTimestamp: now + 30000);
+    // if (!passesHeaderRateLimit(now))
+    //   returnLeagueResponse(responseCode: 429, retryTimestamp: now + 30000);
 
-    apiCalls.add(now);
-    print("url: $url");
+    /// Queue already exists
+    /// Timer will retry soon
+    if(apiQueue.isNotEmpty) {
+      final call = apiQueue.first;
+      apiQueue.add(apiCall);
+      apiCall.leagueResponse = returnLeagueResponse(responseCode: 429, retryTimestamp: retryTimeStamp);
+      return apiCall;
+    }else if(retryTimeStamp > now) {
+      apiQueue.add(apiCall);
+      apiCall.leagueResponse = returnLeagueResponse(responseCode: 429, retryTimestamp: retryTimeStamp);
+      return apiCall;
+    }
+    apiCallsTotal.add(apiCall);
+    print("url: ${apiCall.url}");
 
-    var response = await http.get(Uri.parse(url),);
+    var response = await http.get(Uri.parse(apiCall.url),);
     final headers = response.headers;
     updateHeaders(headers);
     if (response.statusCode == 200) {
-      switch (apiType) {
+      switch (apiCall.apiType) {
         case APIType.summoner:
           {
             final s = Summoner.fromJson(json.decode(response.body));
             myLocalStorage?.saveSummoner(s.name??"", response.body);
-            return returnLeagueResponse(summoner: s, apiType: APIType.summoner);
+            apiCall.leagueResponse = returnLeagueResponse(summoner: s, apiType: APIType.summoner);
+            return apiCall;
           }
         case APIType.overviews:
           {
-            myLocalStorage?.saveMatchHistories(puuid??"", response.body);
+            myLocalStorage?.saveMatchHistories(apiCall.puuid??"", response.body);
             final list = json.decode(response.body) as List<dynamic>;
             final returnList = <String>[];
             list.forEach((element) {
               returnList.add(element);
             });
-            return returnLeagueResponse(matchOverviews: returnList, apiType: APIType.overviews);
+            apiCall.leagueResponse = returnLeagueResponse(matchOverviews: returnList, apiType: APIType.overviews);
+            return apiCall;
           }
         case APIType.match:
           {
             final match = Match.fromJson(json.decode(response.body));
             myLocalStorage?.saveMatch(match.metadata?.matchId??"", response.body);
-            return returnLeagueResponse(match: match, apiType: APIType.match);
+            apiCall.leagueResponse = returnLeagueResponse(match: match, apiType: APIType.match);
+            return apiCall;
           }
         case APIType.league:
           {
@@ -178,11 +195,18 @@ class LeagueAPI extends RateLimiter {
           return returnLeagueResponse(rankedPlayers: challengerPlayers, apiType: APIType.challenger);
       }
     } else if (response.statusCode == 429) {
-      print("We received a 429");
       final tempRetryHeader = headers["retry-after"];
       final secondsToWait = int.parse(tempRetryHeader!);
       final msToWait = secondsToWait * 1000;
-      final retryTimeStamp = msToWait + now;
+      retryTimeStamp = msToWait + now;
+      print("We received a 429, retry after $secondsToWait} or ${timeago.format(DateTime.fromMillisecondsSinceEpoch(retryTimeStamp))}");
+
+
+      apiQueue.add(ApiCall(now, url, isOffendingCall: true));
+      await Future.delayed(const Duration(seconds: 1), () async {
+        makeApiCall(url, apiType)
+      });
+
       return returnLeagueResponse(
           responseCode: response.statusCode, retryTimestamp: retryTimeStamp);
     } else {

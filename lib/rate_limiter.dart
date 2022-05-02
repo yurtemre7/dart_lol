@@ -1,4 +1,5 @@
 import 'package:dart_lol/LeagueStuff/league_entry_dto.dart';
+import 'package:dart_lol/LeagueStuff/responses/api_call.dart';
 import 'package:dart_lol/LeagueStuff/responses/league_response.dart';
 import 'package:dart_lol/dart_lol_api.dart';
 import 'LeagueStuff/responses/league_response.dart';
@@ -7,7 +8,8 @@ import 'package:dart_lol/LeagueStuff/match.dart';
 
 class RateLimiter {
 
-  List apiCalls = [];
+  List<ApiCall> apiCallsTotal = <ApiCall>[];
+  List<ApiCall> apiQueue = <ApiCall>[];
   /// App Rate Limit
   int appMaxCallsPerSecond = 20;
   int appMaxCallsPerTwoMinutes = 100;
@@ -20,6 +22,9 @@ class RateLimiter {
   int headerLowerCurrent = 0;
   int headerUpperCurrent = 0;
 
+  /// Rate Limit
+  int retryTimeStamp = 0;
+
   LeagueResponse returnLeagueResponse({
     APIType apiType = APIType.summoner,
     int? responseCode = 200,
@@ -30,7 +35,7 @@ class RateLimiter {
     LeagueEntryDto? rankedEntryDTO,
     List<LeagueEntryDto>? rankedPlayers}) {
     return LeagueResponse(
-      apiCall: apiType,
+      apiType: apiType,
       responseCode: responseCode,
       retryTimestamp: retryTimestamp,
       appCurrentRateLimitPercentage: appUpperCurrent/appMaxCallsPerTwoMinutes,
@@ -102,9 +107,9 @@ class RateLimiter {
   }
 
   bool passesApiCallsRateLimit(int now) {
-    print("We have made ${apiCalls.length} api calls");
+    print("We have made ${apiCallsTotal.length} api calls");
     final twoMinutesAgo = now - 120000;
-    final listSinceTwoMinutes = apiCalls.where((element) => element > twoMinutesAgo).toList();
+    final listSinceTwoMinutes = apiCallsTotal.where((element) => element.time > twoMinutesAgo).toList();
     print("We have made ${listSinceTwoMinutes.length} api calls within the past 2 minutes");
     if(listSinceTwoMinutes.length >= appMaxCallsPerTwoMinutes)
       return false;
